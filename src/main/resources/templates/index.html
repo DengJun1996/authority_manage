@@ -1,115 +1,250 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
 <head>
-    <th:block th:include="dk :: header('权限管理系统')" />
-    <link rel="stylesheet" type="text/css" th:href="@{/dk/css/login.css}" media="all">
-    <style>
-        .layui-btn-danger {
-            background-color: #be1b1b;
-        }
-    </style>
+    <th:block th:include="config :: header('权限管理系统')" />
 </head>
+<style type="text/css">
+    .closeBox .layui-nav-item a {
+        color: #000000 !important;
+    }
+</style>
 <body>
-<div class="layui-container">
-    <div class="layadmin-user-login-main">
-        <form class="layui-form" action="" lay-filter="">
-            <div class="layadmin-user-login-box layadmin-user-login-header">
-                权限管理系统
-            </div>
-            <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
-                <div class="layui-form-item">
-                    <label class="layadmin-user-login-icon layui-icon layui-icon-username" for="login-username"></label>
-                    <input type="text" class="layui-input" lay-verify="required|account" placeholder="用户名" name="username">
+<div class="layui-layout layui-layout-admin" id="layui_layout">
+    <!-- 顶部区域 -->
+    <div class="layui-header header header-demo">
+        <div class="layui-main">
+            <!-- logo区域 -->
+            <div class="admin-logo-box">
+                <a class="logo" onclick="javascript: window.location.reload();" title="广东电科院能源技术有限责任公司">
+                    <img src="/dk/images/LOGO_NEWPORWER.jpg" width="100%;">
+                </a>
+                <div class="larry-side-menu">
+                    <i class="fa fa-bars" aria-hidden="true"></i>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layadmin-user-login-icon layui-icon layui-icon-password" for="login-password"></label>
-                    <input type="password" class="layui-input password" lay-verify="required|password" placeholder="密码" name="password">
-                </div>
-                <div class="layui-form-item">
-                    <input type="button" class="layui-btn layui-btn-danger layui-btn-fluid" value="立即登陆" lay-submit="" lay-filter="login">
+                <div class="layui-hide dk-notice" style="position: absolute;cursor: pointer;z-index: 19940201;left: 250px;color: white;text-align: center;width: 30px;height: 30px;background-color: #2299ee;line-height: 30px;top: 23%;">
+                    <i class="fa fa-bell-o" aria-hidden="true"></i>
+                    <span class="layui-badge" style="color: red;">3</span>
                 </div>
             </div>
-        </form>
+            <!-- 顶级菜单区域 -->
+            <div class="layui-larry-menu">
+                <ul class="layui-nav clearfix"></ul>
+            </div>
+            <!-- 右侧导航 -->
+            <ul class="layui-nav larry-header-item">
+                <li class="layui-nav-item">
+                    账户名：<em id="userCount"></em>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" id="logOut">
+                        <i class="iconfont icon-exit"></i>
+                        退出
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
+    <!-- 左侧侧边导航开始 -->
+    <div class="layui-side layui-side-bg layui-larry-side" id="larry-side">
+        <div class="layui-side-scroll" id="larry-nav-side" lay-filter="side">
+            <!-- 左侧菜单 -->
+        </div>
+    </div>
+    <!-- 左侧侧边导航结束 -->
+    <!-- 右侧主体内容 -->
+    <div class="layui-body" id="larry-body" style="bottom: 0;border-left: solid 2px #2299ee;">
+        <div class="layui-tab layui-tab-card larry-tab-box" id="larry-tab" lay-filter="demo" lay-allowclose="true" style="height: 100%;">
+            <div class="go-left key-press pressKey" id="titleLeft" title="滚动至最右侧"><i class="larry-icon larry-weibiaoti6-copy"></i>
+            </div>
+            <ul class="layui-tab-title">
+                <li class="admin-home layui-this" id="admin-home"><i class="iconfont icon-home"></i><em>后台首页</em></li>
+            </ul>
+            <div class="go-right key-press pressKey" id="titleRight" title="滚动至最左侧"><i class="larry-icon larry-right"></i></div>
+            <ul class="layui-nav closeBox">
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="iconfont icon-caozuo"></i> 页面操作</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;" class="refresh refreshThis"><i class="layui-icon">&#x1002;</i>
+                            刷新当前</a></dd>
+                        <dd><a href="javascript:;" class="closePageOther"><i class="iconfont icon-prohibit"></i>
+                            关闭其他</a></dd>
+                        <dd><a href="javascript:;" class="closePageAll"><i class="iconfont icon-guanbi"></i> 关闭全部</a>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+            <div class="layui-tab-content" style="height: 100%;">
+                <div class="layui-tab-item layui-show" style="height: 100%;">
+                    <iframe class="larry-iframe" data-id='0' src="/main" id="dk-iframe-main"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 底部区域 -->
+    <!-- 			<div class="layui-footer layui-hide">
+        <div class="layui-mian">
+            <p class="p-admin">
+                <span></span>
+            </p>
+        </div>
+    </div> -->
+    <a th:href="${#httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() + '/'}"
+       class="layui-hide" id="contextPath"></a>
 </div>
-<th:block th:include="dk :: footer" />
-<script type="text/javascript" th:src="@{/dk/js/lizi/jquery.js}"></script>
-<script type="text/javascript" th:src="@{/dk/js/lizi/particleground.js}"></script>
+<th:block th:include="config :: footer" />
+<script type="text/javascript" th:src="@{/dk/js/larry.js}"></script>
+<script type="text/javascript" th:src="@{/dk/js/index.js}"></script>
 <script th:inline="javascript">
-    layui.use(['form'], function() {
-        var form = layui.form,
+    layui.config({
+        base: '/dk/js/'
+    }).extend({
+        ws: 'ws'
+    }).use(['element', 'layer', 'ws', 'myAjax', 'initLeftMenu', 'base64'], function() {
+        let $ = layui.jquery,
+            element = layui.element(),
             layer = layui.layer,
-            $ = layui.jquery;
+            ws = layui.ws,
+            myAjax = layui.myAjax,
+            initLeftMenu = layui.initLeftMenu,
+            base64 = layui.base64,
+            ws_url = "ws://" + $('#contextPath').attr('href') + 'websocket/',
+            url = {
+                wsUrl: ws_url + 'MAIN'
+            };
 
-        // 粒子线条背景
-        // $(document).ready(function() {
-        // 	$('.layui-container').particleground({
-        // 		dotColor: '#EEE8AA',
-        // 		lineColor: '#FAFAD2'
-        // 	});
-        // });
-        $(".password").keydown(function(e) {
-            let param = {
-                username: $('input[name=username]').val(),
-                password: $('input[name=password]').val(),
-            }
-            if (e.keyCode == 13) {
-                if (param.username == '') {
-                    layer.msg('用户名不能为空', {
-                        icon: 5,
-                        time: 1000
-                    });
-                    return false;
-                }
-                if (param.password == '') {
-                    layer.msg('密码不能为空', {
-                        icon: 5,
-                        time: 1000
-                    });
-                    return false;
-                }
-                $.post('/tokenLogin', param, function(res) {
-                    if (res.data != null) {
-                        localStorage.setItem('token', res.data)
-                        localStorage.setItem('userCount', $('input[name=username]').val())
-                        layer.msg('登录成功', {
-                            icon: 1,
-                            time: 1000,
-                        }, function() {
-                            window.location = '/index';
-                        });
+        let param = {
+            loginName: localStorage.getItem('userCount')
+        };
 
-                    } else {
-                        layer.msg(res.msg, {
-                            icon: 5,
-                            time: 1000
-                        });
-                    }
+        $('#userCount').text(param.loginName);
+
+        myAjax.ajax('post', '/indexMenu', param, function(res) {
+            let data = res.data;
+            initLeftMenu.LeftMenu(data);
+            let permissObj = {};
+            $.each(data, function(i, val) {
+                let childData = val.childTree;
+                $.each(childData, function(s, vals) {
+                    permissObj[vals.title] = vals.childTree;
+
                 })
-            }
+            });
+            localStorage.setItem('permissObj', JSON.stringify(permissObj));
         });
-        // 进行登录操作
-        form.on('submit(login)', function(data) {
-            let param = data.field;
-            $.post('/tokenLogin', param, function(res) {
-                if (res.data != null) {
-                    localStorage.setItem('token', res.data)
-                    localStorage.setItem('userCount', $('input[name=username]').val())
-                    layer.msg('登录成功', {
-                        icon: 1,
-                        time: 1000,
-                    }, function() {
-                        window.location = '/index';
-                    });
-
-                } else {
-                    layer.msg(res.msg, {
-                        icon: 5,
-                        time: 1000
-                    });
+        let active = {
+            onMessage: function() {
+                let wSocket = ws.make(url.wsUrl);
+                wSocket.onmessage = function(msg) {
+                    let result = JSON.parse(msg.data);
+                    console.log(result);
+                    // 告警处理
+                    if (result.symbol === 'SOEELECSTATE') {
+                        let ele = $('#noticeNum'),
+                            txt = ele.text();
+                        if (typeof(txt) === 'string') {
+                            if (txt.length <= 0) {
+                                ele.text(1);
+                            } else {
+                                let noticeNum = parseInt(ele.text());
+                                noticeNum++;
+                                ele.text(noticeNum);
+                            }
+                        }
+                        $('#dk-iframe-main').contents().find("#offUserCount").text(result.stopPowerCount);
+                        $('#AlarmNotice').append(active.append(result));
+                    }
                 }
-            })
-            return false;
+            },
+            append: function(result) {
+                let soeData = JSON.parse(result['soeData'])
+                let html = '<dd>' +
+                    '<a class="dk-alarm-detail" ' +
+                    'data-url="/alarmListDetail"' +
+                    'lay-soeId="' + result['soeId'] + '" ' +
+                    'lay-soeData="' + base64.encode(soeData) + '" style="cursor: pointer;">' + (function() {
+                        return result['soeTopic'] + " &nbsp; &nbsp;" + data['time'];
+                    })() + '</a></dd>';
+                return html;
+            },
+            openAlarmDetail: function(url, result) {
+                let param = "?";
+                for (let key in result) {
+                    param += '&' + key + '=' + result[key];
+                }
+                console.log('链接',param)
+                layer.open({
+                    title: '告警详情',
+                    area: ['1200px', '700px'],
+                    type: 2,
+                    content: url + param.trim()
+                });
+            },
+            open: function() {
+                let _this = $(this);
+                _this.remove();
+                $('#noticeNum').text($('#noticeNum').text() - 1);
+                let url = _this.data('url'),
+                    soeId = _this.attr('lay-soeId'),
+                    soeData = base64.decode(_this.attr('lay-soeData')),
+                    soeState = 1;
+                soeData = JSON.parse(soeData);
+                let state = soeData['state'];
+                let param = {
+                    alarmType: soeData['alarmType'],
+                    affectUserId: soeData['affectUserId'],
+                    areaId: soeData['areaId'],
+                    userCount: soeData['userCount'],
+                    isWorked: soeData['isWorked'],
+                    state: state,
+                    isPaired: soeData['isPaired'],
+                    soeId: soeId,
+                    soeState: soeState,
+                };
+                if (state === 1) {
+                    param.workOrderId = soeData['workOrderId'];
+                    param.repairProgramId = soeData['repairProgramId'];
+                    param.alarmArea = soeData['alarmArea'].replace(/[&\|\\\*^%$#@\-]/g, "");
+                } else {
+                    param.alarmArea = soeData['alarmArea'].replace(/[&\|\\\*^%$#@\-]/g, "");
+                }
+                console.log('参数',param)
+                active.openAlarmDetail(url, param);
+            },
+            logOut: function() {
+                let dnToken = localStorage.getItem('token');
+                let layer = layui.layer;
+                layer.msg('你确定登出么？', {
+                    time: 5000, //5秒自动关闭
+                    btn: ['确定', '取消'],
+                    yes: function(index) {
+                        $.ajax({
+                            url: "/tokenLogout",
+                            headers: {
+                                'dnToken': dnToken
+                            },
+                            type: "Post",
+                            success: function(data) {
+                                layer.msg(data.msg);
+                                localStorage.removeItem('token');
+                                localStorage.removeItem('userCount');
+                                location.reload(); //删除成功后再刷新
+                                window.location = '/login';
+                            },
+                            error: function(data) {
+                                $.messager.alert('错误', data.msg);
+                            }
+                        });
+                        layer.close(index);
+                    }
+                });
+            },
+        };
+
+        active.onMessage();
+        document.getElementsByTagName('body')[0].style.zoom = 1;
+        $(function() {
+            $('.layui-nav-child').on('click', '.dk-alarm-detail', active.open);
+            $('.larry-header-item').on('click', '#logOut', active.logOut);
         });
     });
 </script>

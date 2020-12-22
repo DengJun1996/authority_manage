@@ -14,3 +14,11 @@ spring:
       max-request-size: 200MB
   profiles:
     active: dev
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*/*Mapper.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    jdbc-type-for-null: 'null'
+    #¹Ø±Õ×Ö¶ÎÃûµÄÓ³Éä
+    map-underscore-to-camel-case: false
