@@ -1,0 +1,14 @@
+.layui-dk-box{
+    margin: 10px;
+    padding: 5px;
+}
+.layui-dk-top{
+    margin-top: -2px;
+}
+.layui-form-item .layui-input-inline{
+    width : 320px;
+}
+.layui-table-cell{text-align: center !important;}
+.dk-event{display: inline;border-radius: 2px;white-space: nowrap;color: #fff; padding: 3px 4px;}
+.dk-event-handler{background-color: #1276d6;}
+.dk-event-unhandler{background-color: #dd3777e8;}

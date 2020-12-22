@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="dk :: header('系统管理')"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/dk/common/font/iconfont.css}" media="all">
+</head>
+<body>
+    <div class="dLayui-body" style="margin: 10px;padding: 5px;">
+        <div class="layui-row">
+            <input type="file"  id="ttfFile">
+        </div>
+    </div>
+
+    <th:block th:include="dk :: footer"/>
+    <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+    <script th:inline="javascript">
+        layui.use(['form','jquery','base64','dUtil'],function () {
+            let form   = layui.form,
+                base64 = layui.base64,
+                dUtil  = layui.dUtil,
+                $      = layui.$,
+                url    = {
+                    menuUrl : '/querySysMenuPage',
+                    menuAdd : '/addSysMenu'
+                },
+                active = {
+                    readFile : function(){
+                        let fileObj = document.getElementById('ttfFile').files[0],
+                            reader  =  new FileReader();
+                        console.log(fileObj);
+                        // reader.readAsArrayBuffer(fileObj);
+                        // reader.onload = (ev) => {active.parseIcon(ev.target.result)};
+                    },
+                    parseIcon : function (buffer) {
+                        let result = window.opentype.parse(buffer);
+                        for (let key in result.glyphs.glyphs) {
+                            let item = result.glyphs.glyphs[key]
+                            console.log(item.name)
+                            console.log(item.unicode)
+                        }
+                    }
+                };
+
+            active.readFile();
+        })
+    </script>
+</body>
+</html>

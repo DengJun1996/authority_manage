@@ -1,0 +1,11 @@
+spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  ########-spring datasource-########
+  datasource:
+    #账号配置
+    url: jdbc:mysql://localhost:3306/authority_manage?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
