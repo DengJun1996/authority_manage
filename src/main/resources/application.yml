@@ -20,5 +20,5 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     jdbc-type-for-null: 'null'
-    #¹Ø±Õ×Ö¶ÎÃûµÄÓ³Éä
+    #å…³é—­å­—æ®µåçš„æ˜ å°„
     map-underscore-to-camel-case: false

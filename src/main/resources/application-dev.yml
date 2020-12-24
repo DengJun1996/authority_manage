@@ -1,3 +1,4 @@
+# 数据库配置
 spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -5,7 +6,27 @@ spring:
   ########-spring datasource-########
   datasource:
     #账号配置
-    url: jdbc:mysql://localhost:3306/authority_manage?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/zhongshan918?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false&serverTimezone=UTC
     username: root
     password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.jdbc.Driver
+
+    #hikari数据库连接池
+    hikari:
+      pool-name: Retail_HikariCP
+      minimum-idle: 5 #最小空闲连接数量
+      idle-timeout: 180000 #空闲连接存活最大时间，默认600000（10分钟）
+      maximum-pool-size: 10 #连接池最大连接数，默认是10
+      auto-commit: true  #此属性控制从池返回的连接的默认自动提交行为,默认值：true
+      max-lifetime: 1800000 #此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      connection-timeout: 30000 #数据库连接超时时间,默认30秒，即30000
+      connection-test-query: SELECT 1
+dn:
+  # jwt 配置
+  jwt:
+    header: dnToken # 请求头
+    expiration: 30 # 分钟
+    redis-expiration: 60 # 分钟
+  # redis配置路径
+  redisson:
+    path: redis/redisson-dev.yml
