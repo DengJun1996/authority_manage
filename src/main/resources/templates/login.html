@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="dk :: header('权限管理系统')" />
+    <link rel="stylesheet" type="text/css" th:href="@{/dk/css/login.css}" media="all">
+    <style>
+        .layui-btn-danger {
+            background-color: #be1b1b;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layadmin-user-login-main">
+        <form class="layui-form" action="" lay-filter="">
+            <div class="layadmin-user-login-box layadmin-user-login-header">
+                权限管理系统
+            </div>
+            <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+                <div class="layui-form-item">
+                    <label class="layadmin-user-login-icon layui-icon layui-icon-username" for="login-username"></label>
+                    <input type="text" class="layui-input" lay-verify="required|account" placeholder="用户名" name="username">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layadmin-user-login-icon layui-icon layui-icon-password" for="login-password"></label>
+                    <input type="password" class="layui-input password" lay-verify="required|password" placeholder="密码" name="password">
+                </div>
+                <div class="layui-form-item">
+                    <input type="button" class="layui-btn layui-btn-danger layui-btn-fluid" value="立即登陆" lay-submit="" lay-filter="login">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<th:block th:include="dk :: footer" />
+<script type="text/javascript" th:src="@{/dk/js/lizi/jquery.js}"></script>
+<script type="text/javascript" th:src="@{/dk/js/lizi/particleground.js}"></script>
+<script th:inline="javascript">
+    layui.use(['form'], function() {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.jquery;
+
+        // 粒子线条背景
+        // $(document).ready(function() {
+        // 	$('.layui-container').particleground({
+        // 		dotColor: '#EEE8AA',
+        // 		lineColor: '#FAFAD2'
+        // 	});
+        // });
+        $(".password").keydown(function(e) {
+            let param = {
+                username: $('input[name=username]').val(),
+                password: $('input[name=password]').val(),
+            }
+            if (e.keyCode == 13) {
+                if (param.username == '') {
+                    layer.msg('用户名不能为空', {
+                        icon: 5,
+                        time: 1000
+                    });
+                    return false;
+                }
+                if (param.password == '') {
+                    layer.msg('密码不能为空', {
+                        icon: 5,
+                        time: 1000
+                    });
+                    return false;
+                }
+                $.post('/tokenLogin', param, function(res) {
+                    if (res.data != null) {
+                        localStorage.setItem('token', res.data)
+                        localStorage.setItem('userCount', $('input[name=username]').val())
+                        layer.msg('登录成功', {
+                            icon: 1,
+                            time: 1000,
+                        }, function() {
+                            window.location = '/index';
+                        });
+
+                    } else {
+                        layer.msg(res.msg, {
+                            icon: 5,
+                            time: 1000
+                        });
+                    }
+                })
+            }
+        });
+        // 进行登录操作
+        form.on('submit(login)', function(data) {
+            let param = data.field;
+            $.post('/tokenLogin', param, function(res) {
+                if (res.data != null) {
+                    localStorage.setItem('token', res.data)
+                    localStorage.setItem('userCount', $('input[name=username]').val())
+                    layer.msg('登录成功', {
+                        icon: 1,
+                        time: 1000,
+                    }, function() {
+                        window.location = '/index';
+                    });
+
+                } else {
+                    layer.msg(res.msg, {
+                        icon: 5,
+                        time: 1000
+                    });
+                }
+            })
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

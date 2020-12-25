@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="config :: header('LOAD')" />
+		<style>
+			.layui-upload-file{width: 10px;}
+        .layui-btn-small {height: 38px;line-height: 38px;}
+    </style>
+	</head>
+	<body>
+		<div class="layui-hide df-type" th:text="${type}"></div>
+		<div class="dLayui-body" style="margin: 12px;padding: 5px;">
+			<div class="layui-upload">
+				<button type="button" class="layui-btn layui-btn-normal layui-btn-small" id="qFile" disabled="disabled">选择文件</button>
+				<button type="button" class="layui-btn layui-btn-normal layui-btn-small layui-btn-disabled" id="upLoadFile">开始上传</button>
+				<div  class="layui-inline dk-origin" style="height: 38px;line-height:38px;margin-left: 5px;">
+					<form class="layui-form" style="height: 38px;line-height:38px;background-color: #1E9FFF;padding-top:0;">
+						<div class="layui-form-item" style="height: 38px;line-height:38px;margin-bottom: 0;">
+							<div class="layui-inline" style="height: 38px;line-height:38px;">
+								<label class="layui-form-label" style="width: 60px;color: #fff;">拓扑来源</label>
+								<div class="layui-input-inline">
+									<select name="origin" lay-filter="origin">
+										<option value="0">请选择</option>
+										<option value="1">智能终端</option>
+										<option value="2">海准</option>
+										<option value="3">其他</option>
+									</select>
+								</div>
+								<input type="text" autocomplete="off" class="layui-hide" id="layui-select-origin">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="layui-upload-list">
+					<table class="layui-table" lay-size="small">
+						<thead>
+							<tr>
+								<th>文件名</th>
+								<th>大小</th>
+								<th>状态</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody id="dataTbodyList"></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<th:block th:include="config :: layui" />
+		<script th:inline="javascript">
+			layui.config({
+				base: '/dk/js/'
+			}).extend({
+				dUtil: 'dUtil'
+			}).use(['jquery', 'dUtil', 'form', 'layer'], function() {
+				let dUtil = layui.dUtil,
+					$ = layui.$,
+					form = layui.form,
+					layer = layui.layer,
+					type = $('.df-type').text();
+
+				let active = {
+					upload: function() {
+						dUtil.load({
+							tBodyId: 'dataTbodyList',
+							qFileButtonId: 'qFile',
+							url: '/upload',
+							data: {
+								'type': type
+							},
+							bindAction: 'upLoadFile',
+							btn: 'upLoadFile',
+							dnToken: localStorage.getItem('token'),
+						});
+					}
+				};
+
+				form.on('select(origin)', function(data) {
+					console.log(data.value)
+					$('#layui-select-origin').val(data.value);
+					if (data.value != 0) {
+						$('#qFile').attr('disabled', false);
+					} else {
+						$('#qFile').attr('disabled', true);
+					}
+
+				});
+				form.render();
+				active.upload();
+				//$('.dLayui-body').on('click','#upLoadFile',active.upload);
+			});
+		</script>
+	</body>
+</html>
