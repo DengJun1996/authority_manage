@@ -11,7 +11,7 @@ spring:
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
 
-    #hikari数据库连接池
+    #hikari数据库连接池配置
     hikari:
       pool-name: Retail_HikariCP
       minimum-idle: 5 #最小空闲连接数量
