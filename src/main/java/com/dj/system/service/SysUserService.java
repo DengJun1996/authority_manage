@@ -2,9 +2,12 @@ package com.dj.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dj.common.ResEntity;
+import com.dj.system.model.SysRoleEntity;
 import com.dj.system.model.SysUserEntity;
 
 import com.dj.system.vo.SysUserVo;
+
+import java.util.List;
 
 /**
  * @author wxl
@@ -28,5 +31,13 @@ public interface SysUserService extends IService<SysUserEntity> {
      * @return
      */
     ResEntity<?> tokenLogin(SysUserVo sysUserVo);
+
+    /**
+     * 请求头数据
+     *
+     * @param userId
+     * @return
+     */
+    List<SysRoleEntity> getUserRoles(Long userId);
 
 }

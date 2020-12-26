@@ -3,6 +3,28 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.dj.mapper.SysUserRoleMapper">
+<mapper namespace="com.dj.system.mapper.SysUserRoleMapper">
 
+    <select id="selectMenuByRoleId" resultType="com.dj.system.model.SysMenuEntity">
+        SELECT
+	        m.menu_id AS menuId,
+            m.menu_name AS menuName,
+            m.menu_type AS menuType,
+            m.parent_id As pid,
+            m.order_num As orderNum,
+            m.url AS url,
+            m.visible As visible,
+            m.perms As perms,
+            m.icon as icon,
+            m.update_time as updateTime,
+            m.update_by as updatBy
+        FROM
+	        sys_user u
+        INNER JOIN sys_user_role ur
+        INNER JOIN sys_role_menu rm
+        INNER JOIN sys_menu m ON u.login_name = #{loginName}
+        And u.user_id = ur.user_id
+        AND ur.role_id = rm.role_id
+        AND m.menu_id = rm.menu_id
+    </select>
 </mapper>

@@ -3,9 +3,12 @@ package com.dj.system.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dj.system.mapper.SysUserRoleMapper;
+import com.dj.system.model.SysMenuEntity;
 import com.dj.system.model.SysUserRoleEntity;
 import com.dj.system.service.SysUserRoleService;
+
 import com.dj.system.utils.Tree;
+import com.dj.system.utils.TreeUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +29,8 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
     @Override
     public List<Tree> indexMenu(String loginName) {
-        return null;
+        List<SysMenuEntity> listSysMenu = sysUserRoleMapper.selectMenuByRoleId(loginName);
+        return TreeUtil.findTree(listSysMenu);
     }
 
     @Override

@@ -533,52 +533,52 @@
 				let echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
 
 				//数据初始化
-				myAjax.ajax('get', '/indexCount', null, function(res) {
-					let optionDevice = {
-						tooltip: {
-							trigger: 'item',
-							formatter: '{a} <br/>{b} : {c} ({d}%)'
-						},
-						legend: {
-							orient: 'vertical',
-							left: 'left',
-							data: ['设备在线率', '设备离线率']
-						},
-						series: [{
-							name: '访问来源',
-							type: 'pie',
-							radius: '55%',
-							center: ['50%', '60%'],
-							data: [{
-									value: res.data.onlineCount,
-									name: '设备在线率'
-								},
-								{
-									value: res.data.sumCount - res.data.onlineCount,
-									name: '设备离线率'
-								},
-							],
-							emphasis: {
-								itemStyle: {
-									shadowBlur: 10,
-									shadowOffsetX: 0,
-									shadowColor: 'rgba(0, 0, 0, 0.5)'
-								}
-							}
-						}]
-					};
-					echartsDevice.setOption(optionDevice);
-					$("#totalDeviceCount").text(res.data.sumCount);
-					$("#onlineDeviceCount").text(res.data.onlineCount);
-					$("#offDeviceCount").text(res.data.sumCount - res.data.onlineCount);
-					$("#offUserCount").text(res.data.stopPowerCount);
+                /*myAjax.ajax('get', '/indexCount', null, function(res) {
+                    let optionDevice = {
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b} : {c} ({d}%)'
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: ['设备在线率', '设备离线率']
+                        },
+                        series: [{
+                            name: '访问来源',
+                            type: 'pie',
+                            radius: '55%',
+                            center: ['50%', '60%'],
+                            data: [{
+                                    value: res.data.onlineCount,
+                                    name: '设备在线率'
+                                },
+                                {
+                                    value: res.data.sumCount - res.data.onlineCount,
+                                    name: '设备离线率'
+                                },
+                            ],
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }]
+                    };
+                    echartsDevice.setOption(optionDevice);
+                    $("#totalDeviceCount").text(res.data.sumCount);
+                    $("#onlineDeviceCount").text(res.data.onlineCount);
+                    $("#offDeviceCount").text(res.data.sumCount - res.data.onlineCount);
+                    $("#offUserCount").text(res.data.stopPowerCount);
 
-					$("#areaCount").text(res.data.areaCount);
-					$("#hzAreaCount").text(res.data.hzAreaCount);
-					$("#hzUserCount").text(res.data.hzUserCount);
-					$("#lineCount").text(res.data.lineCount);
-					$("#userCount").text(res.data.userCount);
-					$("#userHZ").text(res.data.userHZ);
+                    $("#areaCount").text(res.data.areaCount);
+                    $("#hzAreaCount").text(res.data.hzAreaCount);
+                    $("#hzUserCount").text(res.data.hzUserCount);
+                    $("#lineCount").text(res.data.lineCount);
+                    $("#userCount").text(res.data.userCount);
+                    $("#userHZ").text(res.data.userHZ);
 					let optionRecords = {
 						toolbox: {
 							show: true,
@@ -645,7 +645,7 @@
 						}]
 					};
 					echartsRecords.setOption(optionRecords);
-				})
+				})*/
 
 				$('body').on('click', '[data-iframe-tab]', function() {
 					let obj = this;

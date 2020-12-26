@@ -1,16 +1,26 @@
 package com.dj.system.realm;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.dj.common.Constant;
 import com.dj.config.JWTHelper;
 import com.dj.config.JwtToken;
 import com.dj.config.ConfigProperties;
 import com.dj.constants.RedisConstant;
 import com.dj.common.SysUserStatusEnum;
+import com.dj.system.mapper.SysMenuMapper;
+import com.dj.system.mapper.SysRoleMenuMapper;
+import com.dj.system.model.SysMenuEntity;
+import com.dj.system.model.SysRoleEntity;
+import com.dj.system.model.SysRoleMenuEntity;
 import com.dj.system.model.SysUserEntity;
+import com.dj.system.service.SysMenuService;
 import com.dj.system.service.SysUserService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.redisson.api.RedissonClient;
@@ -18,7 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author wxl
@@ -40,6 +52,12 @@ public class DKRealm  extends AuthorizingRealm {
     private JWTHelper jwtHelper;
 
     @Autowired
+    private SysMenuService sysMenuService;
+
+    @Autowired
+    private SysRoleMenuMapper sysRoleMenuMapper;
+
+    @Autowired
     private ConfigProperties configProperties;
 
     @Override
@@ -56,8 +74,7 @@ public class DKRealm  extends AuthorizingRealm {
      **/
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        return null;
-       /* SysUserEntity userEntity = (SysUserEntity) principalCollection.getPrimaryPrincipal();
+        SysUserEntity userEntity = (SysUserEntity) principalCollection.getPrimaryPrincipal();
         String loginName = userEntity.getLoginName();
         List<String> permList = new ArrayList<>();
         if (loginName.equalsIgnoreCase(Constant.SUPER_ADMIN)) {
@@ -88,7 +105,7 @@ public class DKRealm  extends AuthorizingRealm {
                 .forEach(p -> permSet.addAll(Arrays.asList(p.trim().split(","))));
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
         info.setStringPermissions(permSet);
-        return info;*/
+        return info;
     }
 
     /**

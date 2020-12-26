@@ -55,6 +55,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/index", "anon");
         filterChainDefinitionMap.put("/main", "anon");
+        filterChainDefinitionMap.put("/websocket/**","anon");
+
         filterChainDefinitionMap.put("/**", "authc");
 
         // 添加自己的过滤器并且取名为jwt

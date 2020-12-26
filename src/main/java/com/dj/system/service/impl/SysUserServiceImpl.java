@@ -8,6 +8,9 @@ import com.dj.config.JWTHelper;
 import com.dj.config.ConfigProperties;
 import com.dj.constants.RedisConstant;
 import com.dj.system.controller.BaseController;
+import com.dj.system.model.SysRoleEntity;
+import com.dj.system.model.SysUserRoleEntity;
+import com.dj.system.service.SysRoleService;
 import com.dj.system.utils.ShiroUtils;
 import com.dj.common.SysUserStatusEnum;
 import com.dj.system.mapper.SysUserMapper;
@@ -21,6 +24,8 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,6 +47,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     private ConfigProperties configProperties;
     @Autowired
     private BaseController baseController;
+    @Autowired
+    private SysRoleService sysRoleService;
 
 
     @Override
@@ -83,5 +90,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         redissonClient.getBucket(RedisConstant.PREFIX_USER_TOKEN + DigestUtils.md5Hex(token))
                 .set(token, configProperties.getJwt().getRedisExpiration(), TimeUnit.MINUTES);
         return ResEntity.SUCCESS(ResultEnum.SUCCESS.getCode(), configProperties.getJwt().getPrefix() + token);
+    }
+
+    @Override
+    public List<SysRoleEntity> getUserRoles(Long userId) {
+        QueryWrapper<SysUserRoleEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().select(SysUserRoleEntity::getRoleId).eq(SysUserRoleEntity::getUserId, userId);
+        List<Object> userRoles = sysUserRoleMapper.selectObjs(queryWrapper);
+        if (userRoles.isEmpty()) {
+            return new ArrayList<>();
+        }
+        QueryWrapper<SysRoleEntity> roleEntityQueryWrapper = new QueryWrapper<>();
+        roleEntityQueryWrapper.lambda().in(SysRoleEntity::getRoleId, userRoles);
+        return sysRoleService.list(roleEntityQueryWrapper);
     }
 }
