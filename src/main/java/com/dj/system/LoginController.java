@@ -67,4 +67,17 @@ public class LoginController {
         return sysUserService.tokenLogin(sysUserVo);
     }
 
+
+    /**
+     * token登出
+     *
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "token登出接口")
+    @PostMapping(value = "/tokenLogout")
+    public ResEntity<?> tokenLogout(HttpServletRequest request) {
+        String header = request.getHeader("dnToken");
+        return sysUserService.tokenLogout(header);
+    }
 }

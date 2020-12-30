@@ -20,6 +20,7 @@ import com.dj.system.model.SysUserEntity;
 import com.dj.system.service.SysUserService;
 import com.dj.system.vo.SysUserVo;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         return this.baseMapper.selectOne(userEntityQueryWrapper);
     }
 
+    /**
+     * 登陆
+     *
+     * @param sysUserVo
+     * @return
+     */
     @Override
     public ResEntity<?> tokenLogin(SysUserVo sysUserVo) {
         String password = sysUserVo.getPassword();
@@ -92,6 +99,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         return ResEntity.SUCCESS(ResultEnum.SUCCESS.getCode(), configProperties.getJwt().getPrefix() + token);
     }
 
+    /**
+     * 根据用户id获取角色
+     *
+     * @param userId
+     * @return
+     */
     @Override
     public List<SysRoleEntity> getUserRoles(Long userId) {
         QueryWrapper<SysUserRoleEntity> queryWrapper = new QueryWrapper<>();
@@ -103,5 +116,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         QueryWrapper<SysRoleEntity> roleEntityQueryWrapper = new QueryWrapper<>();
         roleEntityQueryWrapper.lambda().in(SysRoleEntity::getRoleId, userRoles);
         return sysRoleService.list(roleEntityQueryWrapper);
+    }
+
+    /**
+     * 登出
+     *
+     * @param header
+     * @return
+     */
+    @Override
+    public ResEntity<?> tokenLogout(String header) {
+        String perfix = StringUtils.remove(header, configProperties.getJwt().getPrefix());
+        String md5HexToken = DigestUtils.md5Hex(perfix);
+        //删除token
+        redissonClient.getBucket(RedisConstant.PREFIX_USER_TOKEN + md5HexToken).delete();
+        //删除权限缓存
+        redissonClient.getBucket(RedisConstant.getPrefixUserPermissions(jwtHelper.getDnUserId(perfix).toString())).delete();
+        ShiroUtils.logout();
+        return ResEntity.SUCCESS();
     }
 }

@@ -40,4 +40,5 @@ public interface SysUserService extends IService<SysUserEntity> {
      */
     List<SysRoleEntity> getUserRoles(Long userId);
 
+    ResEntity<?> tokenLogout(String header);
 }
