@@ -59,6 +59,12 @@ public class SysMenuController extends BaseController {
         return sysMenuService.removeByMenuId(sysMenuEntity.getMenuId());
     }
 
+    /**
+     * 根据菜单名称模糊查询菜单
+     *
+     * @param menuName
+     * @return
+     */
     @ApiOperation(value = "按菜单名称查找", httpMethod = "GET")
     @GetMapping("/getByMenuName")
     @ResponseBody
@@ -67,6 +73,8 @@ public class SysMenuController extends BaseController {
     }
 
     /**
+     * 根据菜单类型查询对应菜单
+     *
      * @param menuType 菜单类型（M目录 C菜单 F按钮）
      * @return
      */

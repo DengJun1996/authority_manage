@@ -34,6 +34,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
     @Autowired
     private SysUserMapper sysUserMapper;
 
+    /**
+     * 删除菜单
+     *
+     * @param menuId
+     * @return
+     */
     @Override
     public ResEntity<?> removeByMenuId(Long menuId){
         //判断菜单下面是否有子菜单
@@ -48,6 +54,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
     }
 
 
+    /**
+     * 根据菜单名称查询菜单
+     *
+     * @param menuName 菜单名称
+     * @return
+     */
     @Override
     public SysMenuEntity getByMenuName(String menuName) {
         QueryWrapper<SysMenuEntity> menuEntityQueryWrapper = new QueryWrapper<>();
@@ -56,6 +68,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
         return this.baseMapper.selectOne(menuEntityQueryWrapper);
     }
 
+    /**
+     * 根据菜单类型查询对应菜单
+     *
+     * @param menuTypeEnum
+     * @return
+     */
     @Override
     public ResEntity<?> getSupMenuTree(MenuTypeEnum menuTypeEnum) {
         if (menuTypeEnum == MenuTypeEnum.M) {
@@ -76,6 +94,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
         return ResEntity.ERROR("菜单类型错误");
     }
 
+    /**
+     * 分页查询菜单数据
+     *
+     * @param request
+     * @return
+     */
     @Override
     public ResEntity<?> querySysMenuPage(QuerySysMenuRequest request) {
         IPage<SysMenuEntity> page = new Page<>(request.getCurrentPage(), request.getPageSize());
@@ -87,6 +111,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
         return ResEntity.OK(selectPage.getRecords(), Integer.parseInt(selectPage.getTotal() + ""));
     }
 
+    /**
+     * 修改或编辑菜单
+     *
+     * @param sysMenuEntity
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ResEntity<?> saveOrUpdateMenu(SysMenuEntity sysMenuEntity) {
