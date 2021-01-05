@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="dk :: header('菜单管理')" />
+		<link rel="stylesheet" type="text/css" th:href="@{/dk/css/public.css}" media="all">
+		<style>
+			.layui-form-item .layui-input-inline{
+			    width : 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="layui-dk-container">
+			<fieldset class="table-search-fieldset">
+				<legend>搜索信息</legend>
+				<div style="margin: 10px 10px 10px 10px">
+					<form class="layui-form layui-form-pane" action="">
+						<div class="layui-form-item">
+
+							<div class="layui-inline">
+								<label class="layui-form-label">菜单名称</label>
+								<div class="layui-input-inline">
+									<input placeholder="菜单名称" type="text" id="menuName" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-inline">
+								<a class="layui-btn layui-btn-sm layui-btn-normal" data-role='菜单查询' data-method="search"><i class="layui-icon layui-icon-search"></i>&nbsp;查询</a>
+							</div>
+							<div class="layui-inline">
+								<a class="layui-btn layui-btn-sm layui-btn-normal" data-role='菜单新增' data-method="newAdd"><i class="layui-icon layui-icon-add-1"></i>&nbsp;新增</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</fieldset>
+
+			<section>
+				<table class="layui-hide" id="dk-menu-table" lay-filter="initTable"></table>
+				<script type="text/html" id="toolBar">
+					<a class="layui-btn layui-btn-sm tableBtn" data-role='菜单编辑' lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+					<a class="layui-btn layui-btn-danger layui-btn-sm tableBtn" data-role='菜单删除' lay-event="del"><i class="layui-icon layui-icon-close"></i>删除</a>
+				</script>
+			</section>
+		</div>
+
+		<th:block th:include="dk :: footer" />
+		<script th:inline="javascript">
+			layui.use(['jquery', 'dUtil', 'table', 'base64', 'myAjax', 'btnPermiss'], function() {
+				let dUtil = layui.dUtil,
+					$ = layui.jquery,
+					layer = layui.layer,
+					base64 = layui.base64,
+					myAjax = layui.myAjax,
+					table = layui.table,
+					btnPermiss = layui.btnPermiss.setBtnPermiss('菜单管理'),
+					active = {
+						newAdd: function() {
+							dUtil.dLayer({
+								title: '<h3>新增菜单</h3>',
+								type: 2,
+								area: ['600px', '520px'],
+								content: '/addMenuPage',
+								success: function(layero, index) {},
+								yes: function(index, layero) {
+									let body = layer.getChildFrame('body', index),
+										param = {
+											menuName: body.find('input[name=menuName]').val(),
+											pid: body.find('input[name=pid]').val() ? body.find('input[name=pid]').val() : 0,
+											menuType: body.find('input[name=menuType]').val(),
+											perms: body.find('input[name=perms]').val(),
+											icon: body.find('input[name=icon]').val(),
+											url: body.find('input[name=url]').val(),
+											type: 1,
+										};
+									active.addOrUpdate('/addOrUpdateSysMenu', param, index);
+								}
+							});
+						},
+						initTable: function() {
+							let config = {
+								id: 'dk-menu-table',
+								title: '菜单表',
+								url: '/querySysMenuPage',
+								dnToken: localStorage.getItem('token'),
+								cols: [{
+										type: 'checkbox'
+									}, {
+										field: 'menuName',
+										title: '菜单名称'
+									}, {
+										field: 'pid',
+										title: '上级菜单ID'
+									}, {
+										field: 'menuType',
+										title: '菜单类型',
+										templet: function(d) {
+											return d.menuType === 'M' ? '目录' : d.menuType === 'C' ? '菜单' : '按钮';
+										}
+									}, {
+										field: 'url',
+										title: '菜单路径'
+									},
+									{
+										field: 'perms',
+										title: '权限标识'
+									}, {
+										field: 'icon',
+										title: '图标标识'
+									}, {
+										title: '操作',
+										align: 'center',
+										templet: '#toolBar',
+										fixed: 'right',
+										width: '20%'
+									}
+								],
+								tableId: 'menuId',
+								param: {
+									menuName: $('#menuName').val()
+								},
+								done: function() {
+									$(".tableBtn").each(function() {
+										let title = $(this).attr('data-role');
+										if (!btnPermiss.includes(title)) {
+											$(this).hide();
+										}
+									})
+								},
+							};
+							return dUtil.initTable(config);
+						},
+						search: function() {
+							//let t = active.initTable();
+							table.reload('menuId', {
+								where: {
+									menuName: $('#menuName').val()
+								},
+								page: {
+									curr: 1
+								}
+							});
+						},
+						addOrUpdate: function(url, param, index) {
+							myAjax.ajax('post', url, param, function(res) {
+								if (res.code === 0) {
+									layer.msg('操作成功', {
+										icon: 1,
+										time: 500
+									}, function() {
+										let param = {
+											loginName: localStorage.getItem('userCount')
+										};
+										myAjax.ajax('post', '/indexMenu', param, function(res) {
+											let data = res.data;							
+											window.parent.layui.initLeftMenu.LeftMenu(data)
+											let permissObj = {};
+											$.each(data, function(i, val) {
+												let childData = val.childTree;
+												$.each(childData, function(s, vals) {
+													permissObj[vals.title] = vals.childTree;
+												})
+											});
+											localStorage.setItem('permissObj', JSON.stringify(permissObj));
+										});
+
+										layer.close(index);
+										active.initTable();
+									});
+								} else {
+									layer.msg(res.msg, {
+										icon: 5,
+										time: 2500
+									});
+								}
+							})
+						}
+					};
+
+				active.initTable();
+
+				//权限控制
+				$(".layui-dk-container .layui-btn-normal").each(function() {
+					let title = $(this).attr('data-role');
+					if (!btnPermiss.includes(title)) {
+						$(this).hide();
+					}
+
+				})
+				table.on('tool(initTable)', function(obj) {
+					let e = obj.event;
+					let data = {}
+					for (let i in obj.data) {
+						data[i] = encodeURIComponent(obj.data[i]);
+					}
+					if (e === 'edit') {
+						let url = '/editMenuPage?' +
+							'menuName=' + data.menuName +
+							'&menuType=' + data.menuType +
+							'&pid=' + data.pid +
+							'&url=' + data.url +
+							'&icon=' + data.icon +
+							'&perms=' + data.perms;
+						dUtil.dLayer({
+							title: '<h3>修改菜单</h3>',
+							type: 2,
+							area: ['640px', '520px'],
+							content: url,
+							success: function(layero, index) {},
+							yes: function(index, layero) {
+								let body = layer.getChildFrame('body', index),
+									param = {
+										menuName: body.find('input[name=menuName]').val(),
+										pid: body.find('input[name=pid]').val() ? body.find('input[name=pid]').val() : 0,
+										orderNum: body.find('input[name=orderNum]').val(),
+										menuType: body.find('input[name=menuType]').val(),
+										visible: body.find('input[name=visible]').val(),
+										perms: body.find('input[name=perms]').val(),
+										icon: body.find('input[name=icon]').val(),
+										menuId: obj.data.menuId,
+										url: body.find('input[name=url]').val(),
+										type: 2
+									};
+								active.addOrUpdate('/addOrUpdateSysMenu', param, index);
+							}
+						});
+					} else if (e === 'del') {
+						let param = {
+							menuId: obj.data.menuId
+						}
+						layer.confirm("确定需要删除?", {
+							icon: 3,
+							title: '提示'
+						}, function() {
+							myAjax.ajax('post', '/delSysMenu', param, function(res) {
+								if (res.code === 0) {
+									layer.msg('删除成功', {
+										icon: 1,
+										time: 500
+									}, function() {
+										active.initTable();
+									});
+								} else {
+									layer.msg(res.msg, {
+										icon: 5,
+										time: 1500
+									});
+								}
+							})
+						})
+					}
+				})
+
+				$('.layui-dk-container .layui-btn').on('click', function() {
+					let t = $(this),
+						method = t.data('method');
+					active[method] ? active[method].call(this, t) : '';
+				});
+			});
+		</script>
+	</body>
+</html>

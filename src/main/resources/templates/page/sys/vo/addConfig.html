@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="dk :: header('添加配置')" />
+	</head>
+	<body>
+		<div class="dLayui-body" style="margin: 10px;padding: 5px;">
+			<div class="layui-row">
+				<div class="layui-col-md12">
+					<form class="layui-form dk-config-form" action="">
+						<div class="layui-form-item">
+							<label class="layui-form-label layui-required"><span style="color: red">*</span>配置名称:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="configName" autocomplete="off" placeholder="请输入配置名称" class="layui-input dk-input">
+							</div>
+							<div class="layui-form-mid">填写配置名称</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label"><span style="color: red">*</span>配置模板:</label>
+								<div class="layui-input-inline">
+									<input type="text" name="model" autocomplete="off" class="layui-input dk-input layui-hide selectModel" id="selectModel">
+									<div id="modelSelect" class="xm-select-size"></div>
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item layui-form-text dk-form-text">
+							<label class="layui-form-label layui-required"><span style="color: red">*</span>描述</label>
+							<div class="layui-input-inline">
+								<textarea name="remark" placeholder="请输入描述内容" class="layui-textarea dk-input"></textarea>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			<input type="button" class="layui-hide dk-btn-sure">
+		</div>
+		<th:block th:include="dk :: footer" />
+		<script th:inline="javascript">
+			// TODO modelData = {}
+			let modelData = [[${configList}]];
+			layui.use(['form', 'table', 'myAjax'], function() {
+				let form = layui.form,
+					myAjax = layui.myAjax,
+					layer = layui.layer,
+					table = layui.table,
+					$ = layui.jquery,
+					dSelect = xmSelect.render({
+						el: '#modelSelect',
+						max: 1,
+						tips: '请选择配置模板',
+						on: function(data) {
+							let arr = data.arr;
+							let textEl = $('.dk-form-text'),
+								divEls = textEl.nextAll(),
+								selectModelEl = $('#selectModel'),
+								arrLen = arr.length;
+							let divElsLen = divEls.length;
+							if (arrLen > 0) {
+								if (divElsLen > 0) {
+									active.removeDiv(divEls);
+								}
+								let key = data.arr[0]['value'];
+								selectModelEl.val(key);
+								let divData = modelData[key];
+								active.createDiv({
+									data: divData,
+									parentEl: textEl
+								});
+							} else {
+								selectModelEl.val("");
+								if (divElsLen > 0) {
+									active.removeDiv(divEls);
+								}
+							}
+						},
+						paging: true,
+						pageSize: 8,
+						filterable: true,
+						data: (function() {
+							let arr = [];
+							if (modelData) {
+								for (let k in modelData) {
+									arr.push({
+										name: k,
+										value: k
+									});
+								}
+							}
+							return arr;
+						})()
+					});
+				let active = {
+					createDiv: function(config) {
+						let parentEl = config.parentEl,
+							data = config.data;
+						for (let key in data) {
+							let div = $('<div class="layui-form-item">' +
+								'<label class="layui-form-label layui-required"><span style="color: #ff0000">*</span>' + data[key] +
+								'</label>' +
+								'<div class="layui-input-inline">' +
+								'<input type="text" name="' + key + '" autocomplete="off" placeholder="请输入' + data[key] +
+								'" class="layui-input dk-input">' +
+								'</div>' +
+								'<div class="layui-form-mid">填写' + data[key] + '</div>' +
+								'</div>');
+							parentEl.after(div);
+						}
+
+					},
+					removeDiv: function(divEls, len) {
+						let divLen = divEls.length;
+						for (let i = 0; i < divLen; i++) {
+							$(divEls[i]).remove();
+						}
+					},
+					add: function() {
+						let iframeIndex = parent.layer.getFrameIndex(window.name);
+						let formEl = $('.dk-config-form');
+						let inputList = formEl.find('.dk-input'),
+							inputListLen = inputList.length;
+						if (inputListLen <= 3) {
+							layer.msg("请选择配置的模板");
+							return;
+						}
+						let param = {};
+						let configVal = {};
+						for (let i = 0; i < inputListLen; i++) {
+							let name = $(inputList[i]).attr('name');
+							if (name !== 'model') {
+								switch (name) {
+									case 'configName':
+									case 'remark':
+										param[name] = $(inputList[i]).val();
+										break;
+									default:
+										configVal[name] = $(inputList[i]).val();
+										break;
+								}
+							}
+						}
+						param['configVal'] = JSON.stringify(configVal);
+						param['configType'] = 'N';
+						myAjax.ajax('post', '/sys/config/addSysConfig', param, function(res) {
+							if (res.code === 0) {
+								layer.msg('创建模板配置成功', {
+									icon: 1,
+									time: 1000
+								}, function() {
+									parent.layer.close(iframeIndex);
+								});
+							} else {
+								layer.msg('操作失败!', {
+									icon: 1,
+									time: 1000
+								});
+							}
+						});
+					}
+				};
+				form.render();
+				$('.dLayui-body').on('click', '.dk-btn-sure', active.add)
+			})
+		</script>
+	</body>
+</html>

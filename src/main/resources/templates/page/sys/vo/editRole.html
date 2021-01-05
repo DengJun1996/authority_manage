@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="new :: header('新增角色')" />
+	</head>
+	<body>
+
+		<div class="layui-dk-box">
+			<div class="dk-personal">
+				<form class="layui-form dkEditRoleForm" action="" th:data-id="${roleId}">
+					<div class="layui-form-item">
+						<label class="layui-form-label">角色名称:</label>
+						<div class="layui-input-inline">
+							<input type="text" name="roleName" id="roleName" autocomplete="off" placeholder="请输入角色名称" class="layui-input">
+						</div>
+						<!-- <div class="layui-form-mid">登陆系统帐号</div> -->
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">角色代码:</label>
+						<div class="layui-input-inline">
+							<input type="text" name="roleKey" id="roleKey" autocomplete="off" placeholder="请输入角色代码" class="layui-input">
+						</div>
+						<!-- <div class="layui-form-mid">用户真实姓名</div> -->
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">权限添加:</label>
+						<div class="layui-input-inline">
+							<input type="text" name="menuList" id="menuIds" data-method="selectMenu" autocomplete="off" placeholder="请选择权限"
+							 class="layui-input dk-btn">
+						</div>
+						<!-- <div class="layui-form-mid">如:admin-> ADMIN</div> -->
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">状态:</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="status" id="open" value="0" title="启用" checked>
+							<input type="radio" name="status" id="off" value="1" title="禁用">
+						</div>
+						<!-- <div class="layui-form-mid">用户具有什么角色</div> -->
+					</div>
+
+					<div class="layui-form-item layui-hide">
+						<div class="layui-input-inline">
+							<button type="button" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div id='selectMenu' style="display: none;"></div>
+		<th:block th:include="config :: footer2" />
+		<script th:inline="javascript">
+			layui.use(['form', 'tree', 'myAjax'], function() {
+				let form = layui.form,
+					layer = layui.layer,
+					tree = layui.tree,
+					myAjax = layui.myAjax,
+					$ = layui.jquery;
+				let active = {
+					selectMenu: function() {
+						layer.open({
+							title: '权限选择',
+							type: 1,
+							content: $('#selectMenu'),
+							area: ['280px', '380px'],
+							btn: ['确认'],
+							yes: function(index, layero) {
+								var checkData = tree.getChecked('selectMenuId');
+								var ids = [];
+								if (checkData.length != 0) {
+									for (let val of checkData) {
+										ids.push(val.id);
+										if (val.children.length != 0) {
+											for (let vals of val.children) {
+												ids.push(vals.id);
+												if (vals.children !== undefined && vals.children.length != 0) {
+													for (let s of vals.children) {
+														ids.push(s.id);
+													}
+												}
+											}
+										}
+									}
+								}
+								$('#menuIds').val(ids);
+								layer.close(index);
+								console.log("菜单栏节点", checkData)
+								console.log(ids)
+							}
+						});
+					}
+				}
+
+
+				$('#roleName').val(GetQueryString('roleName'));
+				$('#roleKey').val(GetQueryString('roleKey'));
+				$('#roleSort').val(GetQueryString('roleSort'));
+				$('#delFlag').val(GetQueryString('delFlag'));
+
+				if (GetQueryString('status') == 0) {
+					$("#open").attr('checked', 'true');
+				} else {
+					$("#off").attr('checked', 'true');
+				}
+
+				let param = {
+					roleId: GetQueryString('roleId')
+				}
+				myAjax.ajax('post', '/listMenuByRoleId', param, function(res) {
+					console.log('菜单栏', res)
+					tree.render({
+						elem: '#selectMenu',
+						showCheckbox: true,
+						showLine: true,
+						data: res.data.listAllMenu,
+						id: 'selectMenuId'
+					});
+
+					tree.setChecked('selectMenuId', res.data.arrayMenuId);
+					$('#menuIds').val(res.data.listMySelfMenu)
+				})
+				form.render();
+				$('.layui-dk-box .dk-btn').on('click', function() {
+					let t = $(this),
+						method = t.data('method');
+					active[method] ? active[method].call(this, t) : '';
+				});
+			})
+		</script>
+	</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="dk :: header('系统管理')" />
+		<link rel="stylesheet" type="text/css" th:href="@{/dk/common/global.css}" media="all">
+		<link rel="stylesheet" type="text/css" th:href="@{/dk/css/adminstyle.css}" media="all">
+		<link rel="stylesheet" type="text/css" th:href="@{/dk/css/iconfont.css}" media="all">
+	</head>
+	<style>
+		ul{
+			display: none;
+			width: 100%;
+			height: 100%;
+			text-align: center;
+		}
+		ul li{
+			width: 30px;
+			height: 25px;
+			float: left;
+			margin: 12px;
+		}
+		ul li:hover{
+			cursor: pointer;
+			background-color: #0099CC;
+		}
+	</style>
+	<body>
+		<div class="dLayui-body" style="margin: 10px;padding: 5px;">
+			<div class="layui-row">
+				<div class="layui-col-md12">
+					<form class="layui-form" action="">
+						<div class="layui-form-item">
+							<label class="layui-form-label">菜单名称:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="menuName" autocomplete="off" placeholder="请输入菜单名" class="layui-input" lay-verify="required">
+							</div>
+							<!-- <div class="layui-form-mid">如:系统管理</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">菜单类型:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="menuType" id="menuType" autocomplete="off" placeholder="请输入菜单类型" class="layui-input layui-hide"
+								 lay-verify="required">
+								<div id="sysMenuType"></div>
+							</div>
+							<!-- <div class="layui-form-mid">M:目录、C:菜单、F:按钮</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">父级菜单:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="pid" id="pid" autocomplete="off" placeholder="请选择上级菜单" class="layui-input layui-hide">
+								<div id="parentMenu"></div>
+							</div>
+							<!-- <div class="layui-form-mid">上级菜单,没有就不用填</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">URL:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="url" autocomplete="off" placeholder="请输入请求路径" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">请求地址:->/login</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">权限标示:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="perms" autocomplete="off" placeholder="请输入权限标示" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">如:sys:edit</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">菜单图标:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="icon" id="icon" data-method="selectIcon" autocomplete="off" placeholder="请选择菜单图标"
+								 class="layui-input dk-btn" lay-verify="required">
+							</div>
+							<!-- <div class="layui-form-mid">如:-> <i class="layui-icon layui-icon-user"></i></div> -->
+						</div>
+
+
+						<div class="layui-form-item layui-hide">
+							<div class="layui-input-inline">
+								<button type="button" class="layui-btn dk-btn" data-method="click">立即提交</button>
+								<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<ul id='selectIcon'>
+			<li>
+				<i class="iconfont icon-home" data-icon='iconfont icon-home'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-shebei" data-icon='iconfont icon-shebei'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-diannao" data-icon='iconfont icon-diannao'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-caidan2" data-icon='iconfont icon-caidan2'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-taiqu" data-icon='iconfont icon-taiqu'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-guzhangtingdiantaiqu" data-icon='iconfont icon-guzhangtingdiantaiqu'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-taiquyichangfenxi" data-icon='iconfont icon-taiquyichangfenxi'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-gaojing" data-icon='iconfont icon-gaojing'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-sms" data-icon='iconfont icon-sms'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-duanxin1" data-icon='iconfont icon-duanxin1'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-xitongguanli1" data-icon='iconfont icon-xitongguanli1'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-yonghu" data-icon='iconfont icon-yonghu'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-jiaoseguanli" data-icon='iconfont icon-jiaoseguanli'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-ziyuan1" data-icon='iconfont icon-ziyuan1'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-denglutubiao" data-icon='iconfont icon-denglutubiao'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-geren1" data-icon='iconfont icon-geren1'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-rizhi" data-icon='iconfont icon-rizhi'></i>
+			</li>
+			<li>
+				<i class="iconfont icon-xitong" data-icon='iconfont icon-xitong'></i>
+			</li>
+		</ul>
+		<th:block th:include="dk :: footer" />
+		<script th:inline="javascript">
+			layui.use(['form', 'jquery', 'dUtil', 'myAjax'], function() {
+				let form = layui.form,
+					dUtil = layui.dUtil,
+					$ = layui.$,
+					myAjax = layui.myAjax,
+					url = {
+						menuUrl: '/showMenuTree',
+						menuAdd: '/addSysMenu',
+						iconUrl: '/icons'
+					},
+					active = {
+						selectIcon: function() {
+							layer.open({
+								title: '图标选择',
+								type: 1,
+								content: $('#selectIcon'),
+								area: ['280px', '380px'],
+							});
+						},
+						init: function() {
+							// 实例化菜单类型
+							let menuTypeXm = xmSelect.render({
+								el: '#sysMenuType',
+								tips: '请选择菜单类型',
+								max: 1,
+								on: function(data) {
+
+									if (data.arr.length !== 0) {
+										$('#menuType').val(data.arr[0].value);
+									} else {
+										$('#menuType').val('');
+									}
+									active.getParentMenu();
+								},
+								data: [{
+										name: '目录',
+										value: 'M'
+									},
+									{
+										name: '菜单',
+										value: 'C'
+									},
+									{
+										name: '按钮',
+										value: 'F'
+									}
+								]
+							});
+						},
+						getParentMenu: function() {
+							let param = {
+								menuType: $('#menuType').val(),
+
+							}
+							myAjax.ajax('get', url.menuUrl, param, function(res) {
+								if (res.code === 0 && res.data !== null) {
+									if (res.data.length !== 0) {
+										parentMenu.update({
+											prop: {
+												name: 'menuName',
+												value: 'menuId'
+											},
+											data: res.data,
+											on: function(data) {
+												if (data.arr.length !== 0) {
+													$('#pid').val(data.arr[0]['menuId']);
+												} else {
+													$('#pid').val('');
+												}
+											},
+											autoRow: true
+										})
+									}
+								} else {
+									parentMenu.update({
+										data: res.data,
+									})
+								}
+							})
+						},
+						click: function() {
+							let param = {};
+							$('.layui-input-inline .layui-input').each(function() {
+								let t = $(this);
+								param[t.attr('name')] = t.val();
+							});
+							myAjax.ajax('post', url.menuAdd, param, function(res) {
+								if (res.code === 0) {
+									dUtil.layer.msg('操作成功!');
+								}
+							});
+						}
+					};
+				var parentMenu = xmSelect.render({
+					el: '#parentMenu',
+					tips: '请选择上级菜单',
+					max: 1,
+					paging: true,
+					pageSize: 5,
+					filterable: true,
+					data: []
+				});
+				active.init();
+				form.render();
+				$('#selectIcon li i').on('click', function() {
+					let iconVal = $(this).attr("data-icon");
+					$('#icon').val(iconVal);
+					layer.close(layer.index);
+				})
+				$('.dLayui-body .dk-btn').on('click', function() {
+					let t = $(this),
+						method = t.data('method');
+					active[method] ? active[method].call(this, t) : '';
+				});
+			})
+		</script>
+	</body>
+</html>

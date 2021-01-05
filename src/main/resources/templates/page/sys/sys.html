@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="dk :: header('设备管理')" />
+		<style>
+			.icon {
+				margin-right: 10px;
+				color: #1aa094;
+			}
+
+			.layui-table td,
+			.layui-table th {
+				padding: 9px 10px;
+			}
+
+			body {
+				overflow: scroll;
+			}
+
+
+			/* scrollbar */
+			::-webkit-scrollbar {
+				width: 0;
+				height: 0;
+			}
+
+			::-webkit-scrollbar-track {
+				background-color: transparent;
+			}
+
+			::-webkit-scrollbar-thumb {
+				border-radius: 5px;
+				background-color: rgba(0, 0, 0, 0.3);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="dLayui-body" style="margin: 10px;padding: 5px;">
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-md3">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<i class="fa fa-fire icon"></i>
+							cpu信息
+						</div>
+						<div class="layui-card-body">
+							<div id="echarts-cpu" style="width: 100%;height:417px"></div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-md3">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<i class="fa fa-fire icon"></i>
+							内存信息
+						</div>
+						<div class="layui-card-body">
+							<div id="echarts-mem" style="width: 100%;height:417px"></div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-md3">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<i class="fa fa-fire icon"></i>
+							jvm信息
+						</div>
+						<div class="layui-card-body">
+							<div style="width: 100%;height:412px;">
+								<table class="layui-table">
+									<colgroup>
+										<col width="100">
+										<col>
+									</colgroup>
+									<tbody id="jvmInfo"></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-md3">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<i class="fa fa-fire icon"></i>
+							系统信息
+						</div>
+						<div class="layui-card-body">
+							<div style="width: 100%;height:412px;">
+								<table class="layui-table">
+									<colgroup>
+										<col width="110">
+										<col>
+									</colgroup>
+									<tbody id="sysInfo"></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<i class="fa fa-clipboard icon"></i>
+							文件系统信息
+						</div>
+						<div class="layui-card-body">
+							<div id="echarts-sysFiles" style="width: 100%;height:400px"></div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<i class="fa fa-level-down icon"></i>
+							接口信息
+						</div>
+						<div class="layui-card-body">
+							<div style="width: 100%;height:395px">
+								<table class="layui-table">
+									<colgroup>
+									</colgroup>
+									<thead>
+										<tr>
+											<th>名称</th>
+											<th>物理地址</th>
+											<th>输出包</th>
+											<th>接收包</th>
+											<th>输出字节</th>
+											<th>接收字节</th>
+											<th>速率</th>
+										</tr>
+									</thead>
+									<tbody id='interfeaceInfo'>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-row layui-col-space10">
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<i class="fa fa-battery icon"></i>
+							电源信息
+						</div>
+						<div class="layui-card-body">
+							<div style="width: 100%;height:395px">
+								<table class="layui-table">
+									<colgroup>
+									</colgroup>
+									<thead>
+										<tr>
+											<th>电源名称</th>
+											<th>设备名称</th>
+											<th>电源开启</th>
+											<th>电源使用比率</th>
+											<th>剩余电量</th>
+											<th>电源温度</th>
+										</tr>
+									</thead>
+									<tbody id='powerInfo'>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="layui-col-md6">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							<i class="fa fa-desktop icon"></i>
+							进程信息
+						</div>
+						<div class="layui-card-body">
+							<div style="width: 100%;height:395px">
+								<table class="layui-table">
+									<colgroup>
+									</colgroup>
+									<thead>
+										<tr>
+											<th>运行进程名称</th>
+											<th>perCpu</th>
+											<th>perMen</th>
+											<th>pid</th>
+											<th>rss</th>
+											<th>vsz</th>
+										</tr>
+									</thead>
+									<tbody id='processeInfo'>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<th:block th:include="dk :: footer" />
+		<script th:inline="javascript">
+			layui.use(['layer', 'echarts', 'myAjax'], function() {
+				var $ = layui.jquery,
+					layer = layui.layer,
+					myAjax = layui.myAjax,
+					echarts = layui.echarts;
+				var echartsCpu = echarts.init(document.getElementById('echarts-cpu'), 'walden');
+				var echartsMem = echarts.init(document.getElementById('echarts-mem'), 'walden');
+				var echartsSysFiles = echarts.init(document.getElementById('echarts-sysFiles'), 'walden');
+
+				myAjax.ajax('get', '/serverMonitor', null, function(res) {
+					let _tbody_jvm = $('#jvmInfo');
+					_tbody_jvm.append('<tr><td>名称</td><td>' + res.data.jvm.name + '</td></tr>');
+					_tbody_jvm.append('<tr><td>运行时间</td><td>' + res.data.jvm.runTime + '</td></tr>');
+					_tbody_jvm.append('<tr><td>最大值</td><td>' + res.data.jvm.max + '</td></tr>');
+					_tbody_jvm.append('<tr><td>空闲</td><td>' + res.data.jvm.free + '</td></tr>');
+					_tbody_jvm.append('<tr><td>开始时间</td><td>' + res.data.jvm.startTime + '</td></tr>');
+					_tbody_jvm.append('<tr><td>total</td><td>' + res.data.jvm.total + '</td></tr>');
+					_tbody_jvm.append('<tr><td>usage</td><td>' + res.data.jvm.usage + '</td></tr>');
+					_tbody_jvm.append('<tr><td>使用</td><td>' + res.data.jvm.used + '</td></tr>');
+					_tbody_jvm.append('<tr><td>版本</td><td>' + res.data.jvm.version + '</td></tr>');
+
+					let _tbody_sys = $('#sysInfo');
+					_tbody_sys.append('<tr><td>计算机名称</td><td>' + res.data.sys.computerName + '</td></tr>');
+					_tbody_sys.append('<tr><td>计算机Ip</td><td>' + res.data.sys.computerIp + '</td></tr>');
+					_tbody_sys.append('<tr><td>平台</td><td>' + res.data.sys.osName + '</td></tr>');
+					_tbody_sys.append('<tr><td>osArch</td><td>' + res.data.sys.osArch + '</td></tr>');
+
+					let _tbody_interfeace = $('#interfeaceInfo');
+					res.data.interfaceEntityList.forEach(function(currentValue) {
+						_tbody_interfeace.append('<tr>');
+						_tbody_interfeace.append('<td>' + currentValue.name + '</td>');
+						_tbody_interfeace.append('<td>' + currentValue.macAddr + '</td>');
+						_tbody_interfeace.append('<td>' + currentValue.packetsSent + '</td>');
+						_tbody_interfeace.append('<td>' + currentValue.packetsRecv + '</td>');
+						_tbody_interfeace.append('<td>' + currentValue.bytesSent + '</td>');
+						_tbody_interfeace.append('<td>' + currentValue.bytesRecv + '</td>');
+						_tbody_interfeace.append('<td>' + currentValue.speed + '</td>');
+						_tbody_interfeace.append('</tr>');
+					});
+
+					let _tbody_power = $('#powerInfo');
+					res.data.powerEntityList.forEach(function(currentValue) {
+						_tbody_power.append('<tr>');
+						_tbody_power.append('<td>' + currentValue.name + '</td>');
+						_tbody_power.append('<td>' + currentValue.deviceName + '</td>');
+						_tbody_power.append('<td>' + currentValue.powerOnLine + '</td>');
+						_tbody_power.append('<td>' + currentValue.powerUsageRate + '</td>');
+						_tbody_power.append('<td>' + currentValue.remainingCapacityPercent + '</td>');
+						_tbody_power.append('<td>' + currentValue.temperature + '</td>');
+						_tbody_power.append('</tr>');
+					});
+
+					let _tbody_processe = $('#processeInfo');
+					res.data.processeEntityList.forEach(function(currentValue) {
+						_tbody_processe.append('<tr>');
+						_tbody_processe.append('<td>' + currentValue.name + '</td>');
+						_tbody_processe.append('<td>' + currentValue.perCpu + '</td>');
+						_tbody_processe.append('<td>' + currentValue.perMen + '</td>');
+						_tbody_processe.append('<td>' + currentValue.pid + '</td>');
+						_tbody_processe.append('<td>' + currentValue.rss + '</td>');
+						_tbody_processe.append('<td>' + currentValue.vsz + '</td>');
+						_tbody_processe.append('</tr>');
+					});
+
+					//cpu信息
+					var optionCpu = {
+						color: ['#ED7C30', '#4472C5', '#66CCCC', '#BBBBBB'],
+						tooltip: {
+							trigger: 'item',
+							formatter: '{a} <br/>{b} : {c} ({d}%)'
+						},
+						legend: {
+							orient: 'vertical',
+							left: 'left',
+							data: ['使用', '空闲', '等待', '系统']
+						},
+						series: [{
+							name: 'cpu信息',
+							type: 'pie',
+							radius: '55%',
+							center: ['50%', '50%'],
+							data: [{
+									value: res.data.cpu.used,
+									name: '使用'
+								},
+								{
+									value: res.data.cpu.free,
+									name: '空闲'
+								},
+								{
+									value: res.data.cpu.wait,
+									name: '等待'
+								},
+								{
+									value: res.data.cpu.sys,
+									name: '系统'
+								},
+							],
+							emphasis: {
+								itemStyle: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}]
+					};
+					echartsCpu.setOption(optionCpu);
+
+					//内存信息
+					var optionMem = {
+						color: ['#ED7C30', '#4472C5'],
+						tooltip: {
+							trigger: 'item',
+							formatter: '{a} <br/>{b} : {c} ({d}%)'
+						},
+						legend: {
+							orient: 'vertical',
+							left: 'left',
+							data: ['使用', '空闲']
+						},
+						series: [{
+							name: '内存信息',
+							type: 'pie',
+							radius: '55%',
+							center: ['50%', '50%'],
+							data: [{
+									value: res.data.mem.used,
+									name: '使用'
+								},
+								{
+									value: res.data.mem.free,
+									name: '空闲'
+								},
+							],
+							emphasis: {
+								itemStyle: {
+									shadowBlur: 10,
+									shadowOffsetX: 0,
+									shadowColor: 'rgba(0, 0, 0, 0.5)'
+								}
+							}
+						}]
+					};
+					echartsMem.setOption(optionMem);
+
+					//文件系统信息
+					let sysTypeNameList = [];
+					let usedList = [];
+					let freeList = [];
+					// let usageList = [];
+					res.data.sysFiles.forEach(function(currentValue) {
+						sysTypeNameList.push(currentValue.typeName);
+						let used = currentValue.used;
+						let free = currentValue.free;
+						usedList.push(used.substring(0, used.length - 2));
+						freeList.push(free.substring(0, free.length - 2));
+						// usageList.push(currentValue.usage);
+					})
+					let optionSysFiles = {
+						color: ['#ED7C30', '#4472C5', '#999999'],
+						tooltip: {
+							trigger: 'axis',
+							axisPointer: { // 坐标轴指示器，坐标轴触发有效
+								type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+							}
+						},
+						legend: {
+							data: ['使用', '空闲']
+						},
+						grid: {
+							left: '2%',
+							right: '4%',
+							bottom: '3%',
+							containLabel: true
+						},
+						xAxis: {
+							type: 'value'
+						},
+						yAxis: {
+							type: 'category',
+							data: sysTypeNameList
+						},
+						series: [{
+								name: '使用',
+								type: 'bar',
+								stack: '总量',
+								label: {
+									show: true,
+									position: 'insideRight'
+								},
+								data: usedList
+							},
+							{
+								name: '空闲',
+								type: 'bar',
+								stack: '总量',
+								label: {
+									show: true,
+									position: 'insideRight'
+								},
+								data: freeList
+							},
+						]
+					};
+					echartsSysFiles.setOption(optionSysFiles)
+				})
+
+
+				// echarts 窗口缩放自适应
+				window.onresize = function() {
+					echartsCpu.resize();
+					echartsMem.resize();
+					echartsSysFiles.resize();
+				}
+			})
+		</script>
+	</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="dk :: header('岗位管理')" />
+		<link rel="stylesheet" type="text/css" th:href="@{/dk/css/public.css}" media="all">
+		<style>
+			.layui-form-item .layui-input-inline{
+			    width : 200px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div class="layui-dk-container">
+			<fieldset class="table-search-fieldset">
+				<legend>搜索信息</legend>
+				<div style="margin: 10px 10px 10px 10px">
+					<form class="layui-form layui-form-pane" action="">
+						<div class="layui-form-item">
+
+							<div class="layui-inline">
+								<label class="layui-form-label">岗位名称</label>
+								<div class="layui-input-inline">
+									<input placeholder="请输入岗位名称" type="text" id="postName" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-inline">
+								<a class="layui-btn layui-btn-sm layui-btn-normal" data-role="岗位查询" data-method="search"><i class="layui-icon layui-icon-search"></i>&nbsp;查询</a>
+							</div>
+							<div class="layui-inline">
+								<a class="layui-btn layui-btn-sm layui-btn-normal" data-role="岗位新增" data-method="newAdd"><i class="layui-icon layui-icon-add-1"></i>&nbsp;新增</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</fieldset>
+
+			<section>
+				<table class="layui-hide" id="dk-post-table" lay-filter="initTable"></table>
+				<script type="text/html" id="toolBar">
+					<a class="layui-btn layui-btn-sm tableBtn" data-role="岗位编辑" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+                    <a class="layui-btn layui-btn-danger tableBtn layui-btn-sm" data-role="岗位删除" lay-event="del"><i class="layui-icon layui-icon-close"></i>删除</a>
+        </script>
+			</section>
+		</div>
+
+		<th:block th:include="dk :: footer" />
+		<script th:inline="javascript">
+			layui.use(['jquery', 'dUtil', 'table', 'base64', 'myAjax', 'btnPermiss'], function() {
+				let dUtil = layui.dUtil,
+					$ = layui.jquery,
+					layer = layui.layer,
+					base64 = layui.base64,
+					myAjax = layui.myAjax,
+					table = layui.table,
+					btnPermiss = layui.btnPermiss.setBtnPermiss('岗位管理'),
+					active = {
+						newAdd: function() {
+							dUtil.dLayer({
+								title: '<h3>新增岗位</h3>',
+								type: 2,
+								area: ['640px', '520px'],
+								content: '/addPostPage',
+								success: function(layero, index) {},
+								yes: function(index, layero) {
+									let body = layer.getChildFrame('body', index),
+										param = {
+											postCode: body.find('input[name=postCode]').val(),
+											postName: body.find('input[name=postName]').val(),
+											postSort: body.find('input[name=postSort]').val(),
+											status: body.find('input[name=status]').val(),
+											type: 1,
+										};
+									active.addOrUpdate('/addOrUpdatePost', param, index);
+								}
+							});
+						},
+						initTable: function() {
+							let config = {
+								id: 'dk-post-table',
+								title: '岗位表',
+								url: '/listPost',
+								dnToken: localStorage.getItem('token'),
+								cols: [{
+									type: 'checkbox'
+								}, {
+									field: 'postCode',
+									title: '岗位编号'
+								}, {
+									field: 'postName',
+									title: '岗位名称'
+								}, {
+									field: 'postSort',
+									title: '显示顺序'
+								}, {
+									field: 'status',
+									title: '状态',
+									templet: function(d) {
+										return d.status == '0' ? '启用' : '禁用'
+									}
+								}, {
+									fixed: 'right',
+									title: '操作',
+									align: 'center',
+									toolbar: '#toolBar'
+								}],
+								tableId: 'postId',
+								param: {
+									postName: $('#postName').val()
+								},
+								done: function() {
+									$(".tableBtn").each(function() {
+										let title = $(this).attr('data-role');
+										if (!btnPermiss.includes(title)) {
+											$(this).hide();
+										}
+									})
+								},
+							};
+							return dUtil.initTable(config);
+						},
+						search: function() {
+							//let t = active.initTable();
+							table.reload('postId', {
+								where: {
+									postName: $('#postName').val()
+								},
+								page: {
+									curr: 1
+								}
+							});
+						},
+						addOrUpdate: function(url, param, index) {
+							myAjax.ajax('post', url, param, function(res) {
+								if (res.code === 0) {
+									layer.msg('操作成功', {
+										icon: 1,
+										time: 500
+									}, function() {
+										layer.close(index);
+										active.initTable();
+									});
+								} else {
+									layer.msg(res.msg, {
+										icon: 5,
+										time: 2500
+									});
+								}
+							})
+						}
+					};
+
+				active.initTable();
+
+				console.log('权限', btnPermiss)
+				//权限控制
+				$(".layui-dk-container .layui-btn-normal").each(function() {
+					let title = $(this).attr('data-role');
+					if (!btnPermiss.includes(title)) {
+						$(this).hide();
+					}
+
+				})
+				table.on('tool(initTable)', function(obj) {
+					let e = obj.event;
+					let data = {}
+					for (let i in obj.data) {
+						data[i] = encodeURIComponent(obj.data[i]);
+					}
+					if (e === 'edit') {
+						let url = '/editPostPage?' +
+							'postCode=' + data.postCode +
+							'&postName=' + data.postName +
+							'&postSort=' + data.postSort +
+							'&status=' + data.status;
+						dUtil.dLayer({
+							title: '<h3>修改岗位</h3>',
+							type: 2,
+							area: ['640px', '520px'],
+							content: url,
+							success: function(layero, index) {},
+							yes: function(index, layero) {
+								let body = layer.getChildFrame('body', index);
+								let div_status = $('input[name=status]', body).parent();
+								let $input_status = $('.layui-form-radioed', div_status).prev('input');
+								param = {
+									postCode: body.find('input[name=postCode]').val(),
+									postName: body.find('input[name=postName]').val(),
+									postSort: body.find('input[name=postSort]').val(),
+									status: $input_status.attr("value"),
+									postId: obj.data.postId,
+									type: 2
+								};
+								active.addOrUpdate('/addOrUpdatePost', param, index);
+							}
+						});
+					} else if (e === 'del') {
+
+						layer.confirm("确定需要删除?", {
+							icon: 3,
+							title: '提示'
+						}, function() {
+							myAjax.ajax('post', '/delSysPost', {
+								postId: obj.data.postId
+							}, function(res) {
+								if (res.code === 0) {
+									layer.msg('删除成功', {
+										icon: 1,
+										time: 500
+									}, function() {
+										active.initTable();
+									});
+								} else {
+									layer.msg(res.msg, {
+										icon: 5,
+										time: 1500
+									});
+								}
+							})
+						})
+					}
+				})
+
+				$('.layui-dk-container .layui-btn').on('click', function() {
+					let t = $(this),
+						method = t.data('method');
+					active[method] ? active[method].call(this, t) : '';
+				});
+			});
+		</script>
+	</body>
+</html>

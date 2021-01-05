@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="dk :: header('菜单管理')" />
+		<link rel="stylesheet" type="text/css" th:href="@{/dk/css/public.css}" media="all">
+		<style>
+			.layui-form-item .layui-input-inline{
+			    width : 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="layui-dk-container">
+			<fieldset class="table-search-fieldset">
+				<legend>搜索信息</legend>
+				<div style="margin: 10px 10px 10px 10px">
+					<form class="layui-form layui-form-pane" action="">
+						<div class="layui-form-item">
+
+							<div class="layui-inline">
+								<label class="layui-form-label">模块标题</label>
+								<div class="layui-input-inline">
+									<input placeholder="模块标题" type="text" id="title" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-inline">
+								<a class="layui-btn layui-btn-sm layui-btn-normal" data-role="日志查询" data-method="search"><i class="layui-icon layui-icon-search"></i>&nbsp;查询</a>
+							</div>
+							<!-- <div class="layui-inline">
+								<a class="layui-btn layui-btn-sm layui-btn-normal" data-method="newAdd"><i class="layui-icon layui-icon-add-1"></i>&nbsp;新增</a>
+							</div> -->
+						</div>
+					</form>
+				</div>
+			</fieldset>
+
+			<section>
+				<table class="layui-hide" id="dk-log-table" lay-filter="initTable"></table>
+			</section>
+		</div>
+		<th:block th:include="dk :: footer" />
+		<script th:inline="javascript">
+			layui.use(['jquery', 'dUtil', 'table', 'myAjax', 'btnPermiss'], function() {
+				let dUtil = layui.dUtil,
+					$ = layui.jquery,
+					layer = layui.layer,
+					table = layui.table,
+					myAjax = layui.myAjax,
+					btnPermiss = layui.btnPermiss.setBtnPermiss('日志管理'),
+					active = {
+						initTable: function() {
+							let config = {
+								id: 'dk-log-table',
+								title: '日志表',
+								url: '/listOperLog',
+								dnToken: localStorage.getItem('token'),
+								cols: [{
+									field: 'title',
+									title: '模块标题'
+								}, {
+									field: 'businessType',
+									title: '操作类型'
+								}, {
+									field: 'method',
+									title: '方法名'
+								}, {
+									field: 'requestMethod',
+									title: '请求方式'
+								}, {
+									field: 'operatorType',
+									title: '操作类别'
+								}, {
+									field: 'operName',
+									title: '操作人'
+								}, {
+									field: 'deptName',
+									title: '部门名称'
+								}, {
+									field: 'operUrl',
+									title: '请求URL'
+								}, {
+									field: 'operIp',
+									title: '主机地址'
+								}, {
+									field: 'operLocation',
+									title: '操作地点'
+								}, {
+									field: 'operParam',
+									title: '请求参数'
+								}, {
+									field: 'jsonResult',
+									title: '返回参数'
+								}, {
+									field: 'status',
+									title: '操作状态'
+								}, {
+									field: 'errorMsg',
+									title: '错误消息'
+								}, {
+									field: 'operTime',
+									title: '操作时间'
+								}],
+								tableId: 'logId',
+								param: {
+									title: $('#title').val()
+								}
+							};
+							return dUtil.initTable(config);
+						},
+						search: function() {
+							//let t = active.initTable();
+							table.reload('logId', {
+								where: {
+									title: $('#title').val()
+								},
+								page: {
+									curr: 1
+								}
+							});
+						},
+					};
+					
+				active.initTable();
+				console.log('权限', btnPermiss)
+				//权限控制
+				$(".layui-dk-container .layui-btn-normal").each(function() {
+					let title = $(this).attr('data-role');
+					if (!btnPermiss.includes(title)) {
+						$(this).hide();
+					}
+
+				})
+				$('.layui-dk-container .layui-btn').on('click', function() {
+					let t = $(this),
+						method = t.data('method');
+					active[method] ? active[method].call(this, t) : '';
+				});
+			})
+		</script>
+	</body>
+</html>

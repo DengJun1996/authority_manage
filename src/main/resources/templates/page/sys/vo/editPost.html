@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="dk :: header('修改岗位')" />
+	</head>
+	<body>
+
+		<div class="layui-dk-box">
+			<div class="dk-personal">
+				<form class="layui-form dkEditPostForm">
+					<div class="layui-form-item">
+						<label class="layui-form-label">岗位编号:</label>
+						<div class="layui-input-inline">
+							<input type="text" name="postCode" autocomplete="off" id="postCode" placeholder="请输入岗位编号" class="layui-input">
+						</div>
+						<!-- <div class="layui-form-mid">登陆系统帐号</div> -->
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">岗位名称:</label>
+						<div class="layui-input-inline">
+							<input type="text" name="postName" autocomplete="off" id="postName" placeholder="请输入岗位名称" class="layui-input">
+						</div>
+						<!-- <div class="layui-form-mid">用户真实姓名</div> -->
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">显示顺序:</label>
+						<div class="layui-input-inline">
+							<input type="text" name="postSort" autocomplete="off" id="postSort" placeholder="请输入显示顺序" class="layui-input">
+						</div>
+						<!-- <div class="layui-form-mid">用户具有什么角色</div> -->
+					</div>
+
+					<div class="layui-form-item">
+						<label class="layui-form-label">状态:</label>
+						<div class="layui-input-inline">
+							<input type="radio" name="status" id="open" value="0" title="启用">
+							<input type="radio" name="status" id="off" value="1" title="禁用">
+						</div>
+					</div>
+
+					<div class="layui-form-item layui-hide">
+						<div class="layui-input-inline">
+							<button type="button" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<th:block th:include="dk :: footer" />
+		<script th:inline="javascript">
+			layui.use(['dUtil', 'jquery'], function() {
+
+				let dUtil = layui.dUtil,
+                    form = layui.form,
+					$ = layui.$;
+				$('#postCode').val(GetQueryString('postCode'));
+				$('#postName').val(GetQueryString('postName'));
+				$('#postSort').val(GetQueryString('postSort'));
+                if  (GetQueryString('status') == 0){
+                    $("#open").attr('checked', 'true');
+                } else {
+                    $("#off").attr('checked', 'true');
+                }
+
+                form.render();
+			})
+		</script>
+	</body>
+</html>

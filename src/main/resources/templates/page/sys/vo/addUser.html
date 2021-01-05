@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="new :: header('添加用户')" />
+	</head>
+	<body>
+		<div class="dLayui-body" style="margin: 10px;padding: 5px;">
+			<div class="layui-row">
+				<div class="layui-col-md12">
+					<form class="layui-form" action="">
+						<div class="layui-form-item">
+							<label class="layui-form-label">登陆名:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="loginName" autocomplete="off" placeholder="请输入登陆名" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">登陆系统帐号</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">用户名:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="userName" autocomplete="off" placeholder="请输入用户名" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">用户真实姓名</div> -->
+						</div>
+
+
+						<div class="layui-form-item layui-hide">
+							<label class="layui-form-label">用户类别:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="userType" id="userType" autocomplete="off" placeholder="请输入用户类别" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">用户具有什么类别</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">角色:</label>
+							<div class="layui-input-inline">
+								<select name="roleId" lay-verify="required" id="roleId" lay-filter="search_type">
+									<option value="">请选择角色</option>
+								</select>
+							</div>
+							<!-- <div class="layui-form-mid">用户具有什么角色</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">部门:</label>
+							<div class="layui-input-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="deptName" id="deptName" data-method="selectdept" autocomplete="off" placeholder="请选择"
+									 class="layui-input dk-btn">
+									<input type="text" name="deptId" id="deptId" autocomplete="off" placeholder="请选择" class="layui-input layui-hide">
+								</div>
+							</div>
+							<!-- <div class="layui-form-mid">用户所在部门</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">岗位:</label>
+							<div class="layui-input-inline">
+								<select name="postId" lay-verify="required" id="postId">
+									<option value="">请选择岗位</option>
+								</select>
+							</div>
+							<!-- <div class="layui-form-mid">用户所在岗位</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">电话:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="phoneNumber" autocomplete="off" placeholder="请输入电话号码" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">用户联系方式</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">E-mail:</label>
+							<div class="layui-input-inline">
+								<input type="email" name="email" autocomplete="off" placeholder="请输入邮箱" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">用户邮箱</div> -->
+						</div>
+
+						<!-- <div class="layui-form-item">
+							<label class="layui-form-label">头像:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="avatar" autocomplete="off" placeholder="请输入头像" class="layui-input">
+							</div>
+							<div class="layui-form-mid">用户头像</div>
+						</div> -->
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">性别:</label>
+							<div class="layui-input-inline">
+								<input type="radio" name="sex" value="0" title="男" checked="">
+								<input type="radio" name="sex" value="1" title="女">
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">状态:</label>
+							<div class="layui-input-inline">
+								<input type="radio" name="status" value="0" title="启用" checked="">
+								<input type="radio" name="status" value="1" title="禁用">
+							</div>
+						</div>
+						<div class="layui-form-item layui-hide">
+							<div class="layui-input-inline">
+								<button type="button" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+								<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div id='selectdept' style="display: none;"></div>
+		<th:block th:include="config :: footer2" />
+		<script th:inline="javascript">
+			layui.use(['form', 'tree', 'myAjax'], function() {
+				let form = layui.form,
+					myAjax = layui.myAjax,
+					layer = layui.layer,
+					tree = layui.tree,
+					$ = layui.jquery;
+				let active = {
+					selectdept: function() {
+						layer.open({
+							title: '部门选择',
+							type: 1,
+							content: $('#selectdept'),
+							area: ['280px', '380px'],
+						});
+					}
+				}
+				myAjax.ajax('get', '/getDept', null, function(res) {
+					console.log(res)
+					tree.render({
+						elem: '#selectdept',
+						click: function(obj) {
+							console.log(obj)
+							$('#deptName').val(obj.data.title);
+							$('#deptId').val(obj.data.id);
+							layer.close(layer.index);
+						},
+						showCheckbox: false,
+						showLine: true,
+						data: res.data,
+						id: 'selectdeptId'
+					});
+				})
+
+				myAjax.ajax('get', '/getRoleName', null, function(res) {
+					var server = document.getElementById("roleId");
+					res.data.forEach(function(currentValue) {
+						var option = document.createElement("option");
+						option.setAttribute("value", currentValue.roleId);
+						option.innerText = currentValue.roleName;
+						server.appendChild(option);
+						form.render("select");
+					})
+				})
+
+				myAjax.ajax('get', '/getPostName', null, function(res) {
+					var server = document.getElementById("postId");
+					res.data.forEach(function(currentValue) {
+						var option = document.createElement("option");
+						option.setAttribute("value", currentValue.postId);
+						option.innerText = currentValue.postName;
+						server.appendChild(option);
+						form.render("select");
+					})
+				})
+				form.on('select(search_type)', function(data) {
+					let roleName = $("#roleId option:selected").text();
+					console.log(roleName)
+					if (roleName == '超级管理员') {
+						$('#userType').val(1);
+					} else {
+						$('#userType').val(0);
+					}
+					form.render('select');
+				})
+				form.render();
+				$('.dLayui-body .dk-btn').on('click', function() {
+					let t = $(this),
+						method = t.data('method');
+					active[method] ? active[method].call(this, t) : '';
+				});
+			})
+		</script>
+	</body>
+</html>

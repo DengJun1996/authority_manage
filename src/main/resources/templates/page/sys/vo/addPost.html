@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="dk :: header('系统管理')"/>
+</head>
+<body>
+    <div class="dLayui-body" style="margin: 10px;padding: 5px;">
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <form class="layui-form" action="">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">岗位编号:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="postCode"  autocomplete="off" placeholder="请输入岗位编号" class="layui-input">
+                        </div>
+                        <!-- <div class="layui-form-mid">登陆系统帐号</div> -->
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">岗位名称:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="postName"  autocomplete="off" placeholder="请输入岗位名称" class="layui-input">
+                        </div>
+                        <!-- <div class="layui-form-mid">用户真实姓名</div> -->
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">显示顺序:</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="postSort"  autocomplete="off" placeholder="请输入显示顺序" class="layui-input">
+                        </div>
+                        <!-- <div class="layui-form-mid">用户具有什么角色</div> -->
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">状态:</label>
+                        <div class="layui-input-inline">
+                            <input type="radio" name="status" value="0" title="启用" checked="">
+                            <input type="radio" name="status" value="0" title="禁用">
+                        </div>
+                    </div>
+
+                    <div class="layui-form-item layui-hide">
+                        <div class="layui-input-inline">
+                            <button type="button" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:include="dk :: footer"/>
+    <script th:inline="javascript">
+        layui.use(['form'],function () {
+            let form = layui.form;
+
+
+
+            form.render();
+
+        })
+    </script>
+</body>
+</html>

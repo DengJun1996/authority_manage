@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="dk :: header('系统配置')" />
+		<link rel="stylesheet" type="text/css" th:href="@{/dk/css/public.css}" media="all">
+	</head>
+	<body>
+		<div class="layui-dk-container">
+			<fieldset class="table-search-fieldset">
+				<legend>搜索信息</legend>
+				<div style="margin: 10px 10px 10px 10px">
+					<form class="layui-form layui-form-pane" action="">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">配置名称</label>
+								<div class="layui-input-inline">
+									<input placeholder="请输入关键字" type="text" id="configName" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-inline">
+								<a class="layui-btn layui-btn-sm layui-btn-normal" data-role='新增配置' data-method="newAdd"><i class="layui-icon layui-icon-add-1"></i>&nbsp;新增配置</a>
+							</div>
+							<div class="layui-inline">
+								<a class="layui-btn layui-btn-sm layui-btn-normal" data-role='新增配置' data-method="search"><i class="layui-icon layui-icon-search"></i>&nbsp;查询配置</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</fieldset>
+			<section>
+				<table class="layui-hide" id="dk-sysConfig-table" lay-filter="initTable"></table>
+			</section>
+		</div>
+		<th:block th:include="dk :: footer" />
+		<script th:inline="javascript">
+			layui.use(['jquery', 'dUtil', 'table','btnPermiss'], function() {
+				let dUtil = layui.dUtil,
+					$ = layui.jquery,
+					layer = layui.layer,
+					base64 = layui.base64,
+					table = layui.table,
+					myAjax = layui.myAjax,
+					form = layui.form,
+					btnPermiss = layui.btnPermiss.setBtnPermiss('系统配置'),
+					active = {
+						newAdd: function() {
+							dUtil.dLayer({
+								title: '<h3>新增配置</h3>',
+								type: 2,
+								area: ['640px', '720px'],
+								dnToken: localStorage.getItem('token'),
+								content: '/addSysConfig',
+								success: function(layero, index) {},
+								yes: function(index, layero) {
+									let body = layer.getChildFrame('body', index),
+										btn = body.find('.dk-btn-sure');
+									btn.trigger('click');
+									//layer.close(index);
+								}
+							});
+						},
+						initTable: function() {
+							let config = {
+								id: 'dk-sysConfig-table',
+								title: '配置表',
+								url: '/sys/config/queryConfigPage',
+								method: 'POST',
+								dnToken: localStorage.getItem('token'),
+								cols: [{
+									type: 'numbers',
+									title: '序号'
+								}, {
+									field: 'configName',
+									title: '配置名称'
+								}, {
+									field: 'remark',
+									title: '描述'
+								}],
+								tableId: 'sysConfigId',
+								param: {
+									configName: $('#configName').val()
+								}
+							};
+							return dUtil.initTable(config);
+						},
+						search: function() {
+							//let t = active.initTable();
+							table.reload('sysConfigId', {
+								where: {
+									configName: $('#configName').val()
+								},
+								page: {
+									curr: 1
+								}
+							});
+						}
+					};
+
+				active.initTable();
+				//权限控制
+				console.log(btnPermiss);
+				$(".layui-dk-container .layui-btn-normal").each(function() {
+					let title = $(this).attr('data-role');
+					if (!btnPermiss.includes(title)) {
+						$(this).hide();
+					}
+				
+				})
+				$('.layui-dk-container .layui-btn').on('click', function() {
+					let t = $(this),
+						method = t.data('method');
+					active[method] ? active[method].call(this, t) : '';
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<th:block th:include="new :: header('添加部门')" />
+	</head>
+	<body>
+		<div class="dLayui-body" style="margin: 10px;padding: 5px;">
+			<div class="layui-row">
+				<div class="layui-col-md12">
+					<form class="layui-form" action="">
+						<div class="layui-form-item">
+							<label class="layui-form-label">部门名称:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="deptName" autocomplete="off" placeholder="请输入部门名称" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">登陆系统帐号</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">上级部门:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="pdeptName" id="pdeptName" data-method="selectdept" autocomplete="off" placeholder="请选择"
+								 class="layui-input dk-btn">
+								<input type="text" name="pid" id="pid" autocomplete="off" placeholder="请选择" class="layui-input layui-hide">
+							</div>
+							<!-- <div class="layui-form-mid">用户真实姓名</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">部门序号:</label>
+							<div class="layui-input-inline">
+								<input type="number" name="orderNum" autocomplete="off" placeholder="请输入部门序号" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">用户具有什么角色</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">部门管理人:</label>
+							<div class="layui-input-inline">
+								<input type="text" name="leader" autocomplete="off" placeholder="请输入部门管理人" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">用户联系方式</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">管理人电话:</label>
+							<div class="layui-input-inline">
+								<input type="number" name="phone" autocomplete="off" placeholder="请输入部门管理人电话" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">用户所在部门</div> -->
+						</div>
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">E-mail:</label>
+							<div class="layui-input-inline">
+								<input type="email" name="email" autocomplete="off" placeholder="请输入部门管理人邮箱" class="layui-input">
+							</div>
+							<!-- <div class="layui-form-mid">用户邮箱</div> -->
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">状态:</label>
+							<div class="layui-input-inline">
+								<input type="radio" name="status" value="0" title="启用" checked="">
+								<input type="radio" name="status" value="1" title="禁用">
+							</div>
+						</div>
+
+						<div class="layui-form-item layui-hide">
+							<div class="layui-input-inline">
+								<button type="button" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+								<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div id='selectdept' style="display: none;"></div>
+		<th:block th:include="config :: footer2" />
+		<script th:inline="javascript">
+			layui.use(['form', 'tree', 'myAjax'], function() {
+				let form = layui.form,
+					myAjax = layui.myAjax,
+					layer = layui.layer,
+					tree = layui.tree,
+					$ = layui.jquery;
+				let active = {
+					selectdept: function() {
+						layer.open({
+							title: '部门选择',
+							type: 1,
+							content: $('#selectdept'),
+							area: ['280px', '380px'],
+						});
+					}
+				}
+				myAjax.ajax('get', '/getDept', null, function(res) {
+					console.log(res)
+					tree.render({
+						elem: '#selectdept',
+						click: function(obj) {
+							console.log(obj)
+							$('#pdeptName').val(obj.data.title);
+							$('#pid').val(obj.data.id);
+							console.log($('#pid').val())
+							layer.close(layer.index);
+						},
+						showCheckbox: false,
+						showLine: true,
+						data: res.data,
+						id: 'selectdeptId'
+					});
+				})
+
+				form.render();
+				$('.dLayui-body .dk-btn').on('click', function() {
+					let t = $(this),
+						method = t.data('method');
+					active[method] ? active[method].call(this, t) : '';
+				});
+			})
+		</script>
+	</body>
+</html>
