@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dj.system.mapper.SysDeptMapper">
+
+
+    <select id="querydeptList" resultType="map">
+        select
+        dept_id as deptId,
+        parent_id as pid,
+        dept_name as deptName
+        from
+        sys_dept
+    </select>
+    <select id="selectDetpNam" resultType="map">
+        select
+            dept_id as deptId,
+            dept_name as deptName
+        from
+            sys_dept
+        where
+            dept_id = #{deptId}
+    </select>
+
+</mapper>
