@@ -1,7 +1,7 @@
 package com.dj.system.controller;
 
-import com.dj.config.JWTHelper;
 import com.dj.config.ConfigProperties;
+import com.dj.config.JWTHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,11 +26,27 @@ public class BaseController {
     private ConfigProperties configProperties;
 
     /**
+     * 获取系统用户ID
+     * @return
+     */
+    public Long getSysUserId() {
+        return jwtHelper.getDnUserId(getToken());
+    }
+
+    /**
      * 获取系统用户登录名
      * @return
      */
     public String getSysUserLoginName() {
         return jwtHelper.getLoginName(getToken());
+    }
+
+    /**
+     * 获取用户类型
+     * @return
+     */
+    public String getSysUserType() {
+        return jwtHelper.getUserType(getToken());
     }
 
     /**

@@ -2,6 +2,205 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dj.mapper.SysUserMapper">
+<mapper namespace="com.dj.system.mapper.SysUserMapper">
+
+
+    <select id="queryUserList" resultType="map">
+        select f.*,sp.post_name as postName from
+        (select s.*,case when r.role_name is null  then ''else r.role_name end as  roleName  from
+        (
+        SELECT
+        u.*,
+        CASE
+        WHEN d.dept_name IS NULL THEN
+        '' ELSE d.dept_name
+        END AS deptName
+        FROM
+        (
+        SELECT
+        t.user_id AS userId,
+        t.dept_id AS deptId,
+        t.login_name AS loginName,
+        t.user_name AS userName,
+        t.user_type AS userType,
+        t.salt,
+        t.email,
+        t.phone_number AS phoneNumber,
+        t.sex,
+        t.avatar,
+        t.PASSWORD,
+        t.STATUS,
+        t.del_flag AS delFlag,
+        t.remark,
+        t.role_id AS roleId,
+        t.post_id AS postId
+        FROM
+        sys_user t
+            <if test="userType != 1">
+                WHERE
+                t.del_flag = 0
+            </if>
+
+        ) u
+        LEFT JOIN sys_dept d ON u.deptId = d.dept_id
+        ) s
+        left join
+        sys_role r
+        on s.roleId=r.role_id) f
+        LEFT JOIN
+        sys_post sp
+        on f.postId=sp.post_id
+        <where>
+            <if test="loginName !=null and loginName !=''">
+                and sp.loginName= '${loginName}'
+            </if>
+
+            <if test="deptName !=null and deptName !=''">
+                and sp.deptName = '${deptName}'
+            </if>
+
+            <if test="phoneNumber !=null and phoneNumber !=''">
+                and sp.phoneNumber = '${phoneNumber}'
+            </if>
+        </where>
+    </select>
+
+    <select id="queryUserPage" resultType="com.dj.system.model.SysUserEntity">
+        SELECT
+            u.user_id AS userId,
+            u.dept_id AS deptId,
+            u.login_name AS loginName,
+            u.user_name AS userName,
+            u.user_type AS userType,
+            u.salt,
+            u.email,
+            u.phone_number AS phoneNumber,
+            u.sex,
+            u.avatar,
+            u.PASSWORD,
+            u.STATUS,
+            u.del_flag AS delFlag,
+            u.remark,
+            u.role_id AS roleId,
+            u.post_id AS postId,
+            d.dept_name As deptName,
+            d.leader,
+            r.role_name AS roleName,
+            p.post_name AS postName
+        FROM
+	        sys_user u
+	    LEFT JOIN
+	        sys_dept d ON u.dept_id = d.dept_id
+	    LEFT JOIN
+	        sys_role r on u.role_id = r.role_id
+	    LEFT JOIN
+	        sys_post p ON u.post_id = p.post_id
+	    where
+            u.del_flag = 0
+	    and
+	        u.user_type != 1
+	    <if test="request.userName != null and request.userName != ''">
+            and u.user_name = #{request.userName}
+        </if>
+        <if test="request.deptId != null and request.deptId != ''">
+            and u.dept_id = #{request.deptId}
+        </if>
+        <if test="request.phoneNumber != null and request.phoneNumber !=''">
+            and u.phone_number = #{request.phoneNumber}
+        </if>
+        limit #{request.startPage},#{request.pageSize}
+    </select>
+
+    <select id="selectUserCount" resultType="int">
+        SELECT
+            count(1)
+        FROM
+            sys_user u
+        LEFT JOIN
+            sys_dept d ON u.dept_id = d.dept_id
+        LEFT JOIN
+            sys_role r on u.role_id = r.role_id
+        LEFT JOIN
+            sys_post p ON u.post_id = p.post_id
+        where
+            u.del_flag = 0
+        and
+            u.user_type != 1
+        <if test="request.userName != null and request.userName != ''">
+            and u.user_name = #{request.userName}
+        </if>
+        <if test="request.deptId != null and request.deptId != ''">
+            and u.dept_id = #{request.deptId}
+        </if>
+        <if test="request.phoneNumber != null and request.phoneNumber !=''">
+            and u.phone_number = #{request.phoneNumber}
+        </if>
+    </select>
+
+    <select id="selectAdminUserCount" resultType="int">
+        SELECT
+            count(1)
+        FROM
+            sys_user u
+        LEFT JOIN
+            sys_dept d ON u.dept_id = d.dept_id
+        LEFT JOIN
+            sys_role r on u.role_id = r.role_id
+        LEFT JOIN
+            sys_post p ON u.post_id = p.post_id
+        where 1=1
+        <if test="request.userName != null and request.userName != ''">
+            and u.user_name = #{request.userName}
+        </if>
+        <if test="request.deptId != null and request.deptId != ''">
+            and u.dept_id = #{request.deptId}
+        </if>
+        <if test="request.phoneNumber != null and request.phoneNumber !=''">
+            and u.phone_number = #{request.phoneNumber}
+        </if>
+    </select>
+
+    <select id="queryAdminUserList" resultType="com.dj.system.model.SysUserEntity">
+        SELECT
+            u.user_id AS userId,
+            u.dept_id AS deptId,
+            u.login_name AS loginName,
+            u.user_name AS userName,
+            u.user_type AS userType,
+            u.salt,
+            u.email,
+            u.phone_number AS phoneNumber,
+            u.sex,
+            u.avatar,
+            u.PASSWORD,
+            u.STATUS,
+            u.del_flag AS delFlag,
+            u.remark,
+            u.role_id AS roleId,
+            u.post_id AS postId,
+            d.dept_name As deptName,
+            d.leader,
+            r.role_name AS roleName,
+            p.post_name AS postName
+        FROM
+            sys_user u
+        LEFT JOIN
+            sys_dept d ON u.dept_id = d.dept_id
+        LEFT JOIN
+            sys_role r on u.role_id = r.role_id
+        LEFT JOIN
+            sys_post p ON u.post_id = p.post_id
+        where 1=1
+        <if test="request.userName != null and request.userName != ''">
+            and u.user_name = #{request.userName}
+        </if>
+        <if test="request.deptId != null and request.deptId != ''">
+            and u.dept_id = #{request.deptId}
+        </if>
+        <if test="request.phoneNumber != null and request.phoneNumber !=''">
+            and u.phone_number = #{request.phoneNumber}
+        </if>
+            limit #{request.startPage},#{request.pageSize}
+    </select>
 
 </mapper>

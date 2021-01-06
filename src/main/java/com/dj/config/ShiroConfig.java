@@ -55,6 +55,9 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/index", "anon");
         filterChainDefinitionMap.put("/main", "anon");
+        filterChainDefinitionMap.put("/sysUser", "anon");
+        filterChainDefinitionMap.put("/addUserPage", "anon");
+        filterChainDefinitionMap.put("/editUserPage", "anon");
         filterChainDefinitionMap.put("/sysMenu", "anon");
         filterChainDefinitionMap.put("/addMenuPage","anon");
         filterChainDefinitionMap.put("/editMenuPage","anon");
