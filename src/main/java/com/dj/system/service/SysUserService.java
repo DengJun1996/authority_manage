@@ -44,30 +44,6 @@ public interface SysUserService extends IService<SysUserEntity> {
     ResVo<SysUserEntity> page(SysUserEntity userEntity, Long currentPage, Long countPage);
 
     /**
-     * 添加用户
-     *
-     * @param userEntity     user
-     * @param userPostEntity userPost
-     * @param userRoleEntity userRole
-     * @return boolean
-     * @author wxl
-     * @date 2020-03-20
-     **/
-    boolean addUser(SysUserEntity userEntity, SysUserPostEntity userPostEntity, SysUserRoleEntity userRoleEntity);
-
-    /**
-     * 修改用户
-     *
-     * @param userEntity     user
-     * @param userPostEntity userPost
-     * @param userRoleEntity userRole
-     * @return boolean
-     * @author wxl
-     * @date 2020-03-20
-     **/
-    boolean updateUser(SysUserEntity userEntity, SysUserPostEntity userPostEntity, SysUserRoleEntity userRoleEntity);
-
-    /**
      * 用户新增或者修改
      * @param request 用户请求参数
      * @return

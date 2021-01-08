@@ -79,22 +79,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     }
 
     @Override
-    public boolean addUser(SysUserEntity userEntity, SysUserPostEntity userPostEntity, SysUserRoleEntity userRoleEntity) {
-        userEntity.setSalt(UUID.randomUUID().toString());
-        String newPwd = ShiroUtils.sha256("000000", userEntity.getSalt());
-        userEntity.setPassword(newPwd);
-        boolean flag = this.save(userEntity);
-        if (flag) {
-            sysUserPostMapper.insert(userPostEntity);
-            sysUserRoleMapper.insert(userRoleEntity);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    @Override
     public ResEntity<Boolean> deleteSysUser(SysUserEntity sysUserEntity) {
         Long userId = sysUserEntity.getUserId();
         //获取该用户类型
@@ -114,20 +98,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         sysUser.setDelFlag(2);
         return new ResEntity(this.baseMapper.update(sysUser,new QueryWrapper<SysUserEntity>().eq("user_id",userId)));
 
-    }
-
-    @Override
-    public boolean updateUser(SysUserEntity userEntity, SysUserPostEntity userPostEntity, SysUserRoleEntity userRoleEntity) {
-
-        Long userId = userEntity.getUserId();
-
-        // 删除用户与岗位的记录
-        sysUserPostMapper.delete(new QueryWrapper<SysUserPostEntity>().lambda().eq(SysUserPostEntity::getUserId, userId));
-        sysUserRoleMapper.delete(new QueryWrapper<SysUserRoleEntity>().lambda().eq(SysUserRoleEntity::getUserId, userId));
-        sysUserPostMapper.insert(userPostEntity);
-        sysUserRoleMapper.insert(userRoleEntity);
-
-        return sysUserService.saveOrUpdate(userEntity);
     }
 
     @Transactional(rollbackFor = RuntimeException.class)

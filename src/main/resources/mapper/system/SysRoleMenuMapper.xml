@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dj.system.mapper.SysRoleMenuMapper">
+
+
+    <select id="selectarrayMenuId" resultType="com.dj.system.model.SysRoleMenuEntity">
+        select
+	        rm.menu_id AS menuId,
+	        rm.role_id AS RoleId,
+	        m.parent_id AS PId
+        from
+            sys_role_menu rm,sys_menu m
+        where
+            rm.menu_id = m.menu_id
+        and
+            rm.role_id = #{roleId}
+    </select>
+
+</mapper>

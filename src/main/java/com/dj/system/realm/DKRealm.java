@@ -140,13 +140,6 @@ public class DKRealm  extends AuthorizingRealm {
         return info;
     }
 
-//    @Override
-//    public void setCredentialsMatcher(CredentialsMatcher credentialsMatcher) {
-//        HashedCredentialsMatcher shaCredentialsMatcher = new HashedCredentialsMatcher();
-//        shaCredentialsMatcher.setHashAlgorithmName(ShiroUtils.hashAlgorithmName);
-//        shaCredentialsMatcher.setHashIterations(ShiroUtils.hashIterations);
-//        super.setCredentialsMatcher(shaCredentialsMatcher);
-//    }
 
     /**
      * 校验token的有效性
@@ -154,13 +147,13 @@ public class DKRealm  extends AuthorizingRealm {
      * @param token
      */
     public SysUserEntity checkUserTokenIsEffect(String token) throws AuthenticationException {
-        // 解密获得username，用于和数据库进行对比
+        //解密获得username，用于和数据库进行对比
         String username = jwtHelper.getLoginName(token);
         if (username == null) {
             throw new AuthenticationException("token非法无效!");
         }
 
-        // 查询用户信息
+        //查询用户信息
         log.debug("———校验token是否有效————checkUserTokenIsEffect——————— "+ token);
         SysUserEntity sysUserEntity = sysUserService.getByUserName(username);
 
