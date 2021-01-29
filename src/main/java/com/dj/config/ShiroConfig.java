@@ -64,6 +64,12 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sysRole","anon");
         filterChainDefinitionMap.put("/addRolePage","anon");
         filterChainDefinitionMap.put("/editRolePage","anon");
+        filterChainDefinitionMap.put("/sysDept","anon");
+        filterChainDefinitionMap.put("/addDeptPage","anon");
+        filterChainDefinitionMap.put("/editDeptPage","anon");
+        filterChainDefinitionMap.put("/sysPost","anon");
+        filterChainDefinitionMap.put("/addPostPage","anon");
+        filterChainDefinitionMap.put("/editPostPage","anon");
         filterChainDefinitionMap.put("/websocket/**","anon");
 
         filterChainDefinitionMap.put("/**", "authc");
