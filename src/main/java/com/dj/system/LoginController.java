@@ -4,6 +4,7 @@ import com.dj.common.ResEntity;
 import com.dj.common.ResultEnum;
 import com.dj.system.model.SysUserEntity;
 import com.dj.system.service.SysUserService;
+import com.dj.system.service.WebSocketServer;
 import com.dj.system.vo.SysUserVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +18,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.PathParam;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author wxl
@@ -28,8 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 public class LoginController {
 
     private SysUserService sysUserService;
-
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     public LoginController(SysUserService sysUserService) {
         this.sysUserService = sysUserService;

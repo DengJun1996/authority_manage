@@ -70,6 +70,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sysPost","anon");
         filterChainDefinitionMap.put("/addPostPage","anon");
         filterChainDefinitionMap.put("/editPostPage","anon");
+        filterChainDefinitionMap.put("/sys","anon");
         filterChainDefinitionMap.put("/websocket/**","anon");
 
         filterChainDefinitionMap.put("/**", "authc");

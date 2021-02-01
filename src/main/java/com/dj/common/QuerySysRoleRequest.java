@@ -1,4 +1,4 @@
-package com.dj.system.controller;
+package com.dj.common;
 
 import com.dj.common.PageRequest;
 import lombok.Data;

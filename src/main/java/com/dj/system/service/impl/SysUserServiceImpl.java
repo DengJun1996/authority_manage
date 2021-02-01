@@ -26,6 +26,8 @@ import com.dj.system.vo.SysUserVo;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author wxl
@@ -43,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity> implements SysUserService {
 
+    private static Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
     @Autowired
     private SysUserPostMapper sysUserPostMapper;
     @Autowired
@@ -59,6 +63,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     private SysRoleService sysRoleService;
     @Autowired
     private BaseController baseController;
+
+    /***静态变量，用来记录当前在线连接数。应该把它设计成线程安全的*/
+    private static final AtomicInteger ON_LINE_COUNT = new AtomicInteger(0);
+
 
     @Override
     public SysUserEntity getByUserName(String loginName) {
@@ -207,6 +215,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
             return ResEntity.ERROR(ResultEnum.INCORRECT_CREDENTIALS);
         }
 
+        int count = ON_LINE_COUNT.incrementAndGet();
+        log.info("有新的连接加进来,当前的连接数为{}", count);
+
         String token = jwtHelper.generateToken(userEntity);
         // 设置用户Token
         redissonClient.getBucket(RedisConstant.PREFIX_USER_TOKEN + DigestUtils.md5Hex(token))
@@ -223,6 +234,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         // 刪除权限缓存
         redissonClient.getBucket(RedisConstant.getPrefixUserPermissions((jwtHelper.getDnUserId(removePrefix).toString()))).delete();
         ShiroUtils.logout();
+
+        int count = ON_LINE_COUNT.decrementAndGet();
+        log.info("有一连接关闭！当前在线人数为" + count);
+
         return ResEntity.SUCCESS();
     }
 

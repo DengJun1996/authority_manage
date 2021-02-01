@@ -3,7 +3,7 @@ package com.dj.system.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dj.common.ResEntity;
 import com.dj.common.SysRoleRequest;
-import com.dj.system.controller.QuerySysRoleRequest;
+import com.dj.common.QuerySysRoleRequest;
 import com.dj.system.model.SysRoleEntity;
 import org.apache.poi.ss.formula.functions.T;
 

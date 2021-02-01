@@ -1,5 +1,6 @@
 package com.dj.system.controller;
 
+import com.dj.common.QuerySysRoleRequest;
 import com.dj.common.ResEntity;
 import com.dj.common.SysRoleRequest;
 import com.dj.system.model.SysRoleEntity;

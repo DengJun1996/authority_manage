@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dj.common.ResEntity;
 import com.dj.common.SysRoleRequest;
 import com.dj.system.controller.BaseController;
-import com.dj.system.controller.QuerySysRoleRequest;
+import com.dj.common.QuerySysRoleRequest;
 import com.dj.system.mapper.SysRoleMapper;
 import com.dj.system.mapper.SysUserRoleMapper;
 import com.dj.system.model.SysRoleEntity;
